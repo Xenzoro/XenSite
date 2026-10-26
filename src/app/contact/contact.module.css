@@ -1,0 +1,183 @@
+/* Contact page, ported from the vanilla contact-form.css */
+
+.page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - var(--nav-height));
+  padding: 30px 1.5rem 60px;
+}
+
+.content {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.bodyRow {
+  display: flex;
+  align-items: stretch;
+  gap: 60px;
+}
+
+.leftCol {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2rem;
+  min-width: 0;
+}
+
+.heading {
+  margin: 0;
+  color: var(--color-text-soft);
+  font-size: 3rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.rule {
+  width: 12rem;
+  height: 0.4rem;
+  margin: 0.75rem 0 1.5rem;
+  border: none;
+  border-radius: 10px;
+  background-color: rgba(38, 156, 212, 0.85);
+  opacity: 1;
+}
+
+.socialLinks {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+}
+
+.socialPill {
+  padding: 9px 22px;
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-pill);
+  background: rgba(38, 156, 212, 0.08);
+  color: var(--color-accent-light);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: background 0.2s, color 0.2s, transform 0.2s;
+}
+
+.socialPill:hover {
+  background: var(--color-accent);
+  color: var(--color-bg);
+  transform: translateY(-2px);
+}
+
+.form {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.input {
+  width: 100%;
+  height: 3rem;
+  padding-left: 1.5rem;
+  border: 2px solid rgba(38, 156, 212, 0.4);
+  border-radius: 50px;
+  outline: none;
+  background: var(--color-surface);
+  color: var(--color-text);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.textarea {
+  height: 9rem;
+  padding-top: 1rem;
+  border-radius: 2rem;
+  resize: vertical;
+}
+
+.input:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(38, 156, 212, 0.25);
+}
+
+.input:focus-visible {
+  box-shadow: 0 0 0 3px var(--color-accent-light);
+}
+
+.input::placeholder {
+  color: rgba(232, 232, 232, 0.65);
+}
+
+.submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  padding: 14px 36px;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent);
+  color: var(--color-bg);
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.submit:hover {
+  background: var(--color-accent-light);
+  transform: translateY(-2px);
+}
+
+.right {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+}
+
+.imagePlaceholder {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  border: 2px dashed rgba(38, 156, 212, 0.4);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+}
+
+.imagePlaceholderText {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+@media (max-width: 900px) {
+  .bodyRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .imagePlaceholder {
+    min-height: 260px;
+    aspect-ratio: 16 / 9;
+  }
+}
+
+@media (max-width: 700px) {
+  .page {
+    padding-top: 10px;
+  }
+
+  .heading {
+    font-size: 2.25rem;
+  }
+}

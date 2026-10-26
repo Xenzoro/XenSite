@@ -84,6 +84,10 @@ Jake's personal portfolio site, live on GitHub Pages at `https://xenzoro.github.
 | Slugs come from one `slugify(title)` function until the `slug` column exists; after that the column wins | The build never waits on the schema change, and the SQL fills the column with the same values, so URLs don't change | 2026-10-25 |
 | `Prev-Tasks/`, the vanilla files and the unused scripts are deleted from `nextjs` at the end of the port | All of it is preserved in `vanillaPrototype`; a separate Prev-Tasks repo can be cut from there anytime | 2026-10-25 |
 | Supabase Storage images are downloaded and converted to sized WebP by `scripts/images.mjs` before every dev and build run (output gitignored) | Gallery photos are up to 3.8 MB; Storage has no free resizing; keeps every image under 300 KB without committing copies | 2026-10-25 |
+| Code highlighting uses refractor (Prism in Node) with the prism-tomorrow colors | Same token classes and colors as the old Prism setup, with nothing shipped to the browser | 2026-10-25 |
+| `detail.html` is a static route handler that maps old ids to slugs with a tiny inline script | Old shared links keep working on a static host without server redirects | 2026-10-25 |
+| Small text on tinted backgrounds uses a lighter accent `#4db3e6`; the demo button text is dark | Fixes the baseline contrast failure (3.76:1 tags) with the least visible change | 2026-10-25 |
+| Home has one `<h1>` (the name tag, same look) with section titles as `<h2>` and card titles as `<h3>` | Fixes the baseline heading order failure without changing the design | 2026-10-25 |
 
 ## Open questions (Jake decides)
 
