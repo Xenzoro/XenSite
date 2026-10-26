@@ -9,6 +9,7 @@ export interface NavItem {
 export const NAV_ITEMS: NavItem[] = [
   { href: "/", label: "Home", tilt: "right" },
   { href: "/projects/", label: "Projects", tilt: "left" },
-  { href: "/about/", label: "About Me", tilt: "right" },
+  { href: "/fun/", label: "Fun", tilt: "right" },
+  { href: "/about/", label: "About Me", tilt: "left" },
   { href: "/contact/", label: "Contact", tilt: "left", wide: true },
 ];

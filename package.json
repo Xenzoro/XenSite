@@ -4,11 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "predev": "node scripts/images.mjs --soft",
+    "predev": "node scripts/words.mjs && node scripts/images.mjs --soft",
     "build": "next build",
-    "prebuild": "npm run images",
+    "prebuild": "node scripts/words.mjs && npm run images",
     "start": "next start",
     "lint": "eslint",
+    "test": "node --test \"src/**/*.test.ts\"",
     "images": "node scripts/images.mjs"
   },
   "dependencies": {
@@ -27,6 +28,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.4.3",
     "sharp": "^0.35.5",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wordlist-english": "^1.2.1"
   }
 }

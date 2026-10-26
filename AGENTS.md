@@ -19,17 +19,19 @@ You are helping Jake (GitHub: Xenzoro) with XenSite, his portfolio site. Before 
 npm install
 npm run dev     # http://localhost:3000
 npm run lint
+npm test        # unit tests (node --test)
 npm run build   # static export into out/ (runs scripts/images.mjs first)
 ```
 
-`npm run dev` and `npm run build` both run `scripts/images.mjs` first, which needs `.env.local` (see `.env.example`).
+`npm run dev` and `npm run build` both run `scripts/words.mjs` (word finder dictionary) and `scripts/images.mjs` first; the image step needs `.env.local` (see `.env.example`).
 
 This is Next.js 16, which may differ from what you know. Check the docs bundled in `node_modules/next/dist/docs/` before writing Next.js code.
 
 ## Where things live
 
 - `src/app/`: routes (home, `projects/`, `projects/[slug]/`, `about/`, `contact/`, `not-found.tsx`) with their CSS Modules, plus `detail.html/route.ts`, which builds the redirect page for old `detail.html?id=N` links.
-- `src/components/`: `Navbar/`, `Home/`, `Project/` (code excerpts, terminal replay, feed search), `About/` (gallery and lightbox). Only the interactive pieces are client components.
+- `src/app/fun/`: the Fun tab and `word-finder/`.
+- `src/components/`: `Navbar/`, `Home/`, `Fun/` (card grid, word finder), `Project/` (code excerpts, terminal replay, feed search), `About/` (gallery and lightbox). Only the interactive pieces are client components.
 - `src/lib/`: `supabase.ts` (build time reads), `types.ts`, `slug.ts`, `media.ts` (Storage URL to local WebP), `highlight.ts` (refractor), `site.ts` (base path and site name).
 - `src/assets/`: committed WebP photos and logo. `public/`: resume PDF.
 - Generated and gitignored: `public/media/` and `src/lib/generated/media.json` from `scripts/images.mjs`, and `out/` from the build.
