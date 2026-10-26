@@ -88,6 +88,9 @@ Jake's personal portfolio site, live on GitHub Pages at `https://xenzoro.github.
 | `detail.html` is a static route handler that maps old ids to slugs with a tiny inline script | Old shared links keep working on a static host without server redirects | 2026-10-25 |
 | Small text on tinted backgrounds uses a lighter accent `#4db3e6`; the demo button text is dark | Fixes the baseline contrast failure (3.76:1 tags) with the least visible change | 2026-10-25 |
 | Home has one `<h1>` (the name tag, same look) with section titles as `<h2>` and card titles as `<h3>` | Fixes the baseline heading order failure without changing the design | 2026-10-25 |
+| `experimental.inlineCss` on | About 6 KB of CSS gzipped; removes render blocking requests (FCP 1.7s to 1.0s locally) and Pages only caches 10 minutes anyway | 2026-10-25 |
+| Navbar links prefetch on hover or focus, not when they enter the viewport | First visit downloads only the page itself (about 49 KB less); moved local mobile Perf from 86 to 91 | 2026-10-25 |
+| Archivo shipped as a Latin subset WOFF2 | Same glyphs the site uses, 19 KB instead of 89 KB | 2026-10-25 |
 
 ## Open questions (Jake decides)
 

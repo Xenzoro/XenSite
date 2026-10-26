@@ -89,27 +89,51 @@
 
 .dots {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 10px 0 0;
+  padding: 0;
 }
 
-.dot {
-  width: 6px;
-  height: 6px;
+/* 24px tap target around a small visible dot (drawn by ::before) */
+.dot,
+.lightboxDot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
   padding: 0;
   border: none;
+  background: none;
+}
+
+.dot::before,
+.lightboxDot::before {
+  content: "";
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.25);
   transition: background 0.2s, transform 0.2s;
 }
 
-.dot:hover {
+.lightboxDot::before {
+  width: 8px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.dot:hover::before {
   background: rgba(255, 255, 255, 0.5);
 }
 
-.dotActive {
+.lightboxDot:hover::before {
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.dotActive::before,
+.lightboxDot.dotActive::before {
   background: var(--color-accent);
   transform: scale(1.3);
 }
@@ -211,23 +235,9 @@
 
 .lightboxDots {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-}
-
-.lightboxDot {
-  width: 8px;
-  height: 8px;
-  padding: 0;
-  border: none;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3);
-  transition: background 0.2s, transform 0.2s;
-}
-
-.lightboxDot:hover {
-  background: rgba(255, 255, 255, 0.55);
 }
 
 .close {

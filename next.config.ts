@@ -7,6 +7,8 @@ const nextConfig: NextConfig = {
   basePath: BASE_PATH,
   trailingSlash: true,
   images: { unoptimized: true },
+  // About 6 KB of CSS gzipped: inlining it removes the render blocking stylesheet requests
+  experimental: { inlineCss: true },
   // Keep AGENTS.md hand written; next dev would otherwise add its own block
   agentRules: false,
 };

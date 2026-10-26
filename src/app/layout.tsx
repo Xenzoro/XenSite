@@ -6,7 +6,8 @@ import { SITE_DESCRIPTION, SITE_NAME } from "@/lib/site";
 import "./globals.css";
 
 const archivo = localFont({
-  src: "./fonts/archivo.ttf",
+  // Latin subset of the old archivo.ttf, as WOFF2 (89 KB down to 19 KB)
+  src: "./fonts/archivo.woff2",
   variable: "--font-archivo",
   display: "swap",
 });
