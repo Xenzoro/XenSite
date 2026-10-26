@@ -80,10 +80,12 @@ Jake's personal portfolio site, live on GitHub Pages at `https://xenzoro.github.
 | Next.js 16; scaffold defaults `cacheComponents` and `partialPrefetching` removed | Both need a server and break `output: "export"` | 2026-10-25 |
 | `agentRules: false` in `next.config.ts` | Stops `next dev` from writing its own block into AGENTS.md | 2026-10-25 |
 | ESLint ignores `project-files/` and `Prev-Tasks/` | Old vanilla code is not linted; it is removed at the end of the port | 2026-10-25 |
+| Whole port done in one agent run (Phases 2 to 5 in NEXT.md), committing after each stage | Jake wants one prompt, not repeated check ins | 2026-10-25 |
+| Slugs come from one `slugify(title)` function until the `slug` column exists; after that the column wins | The build never waits on the schema change, and the SQL fills the column with the same values, so URLs don't change | 2026-10-25 |
+| `Prev-Tasks/`, the vanilla files and the unused scripts are deleted from `nextjs` at the end of the port | All of it is preserved in `vanillaPrototype`; a separate Prev-Tasks repo can be cut from there anytime | 2026-10-25 |
 
 ## Open questions (Jake decides)
 
-- Name of the new repo for `Prev-Tasks/`.
+- Name of the new repo for `Prev-Tasks/` (cut from `vanillaPrototype` whenever Jake wants).
 - Final slug for each project (Claude proposes from titles, Jake approves before the column is filled).
 - Keep the `/XenSite` path, or move to a custom domain later.
-- What to do with the unused files (horizontal project scroll, contact outro, four empty stub pages): delete, or keep for a later feature.
