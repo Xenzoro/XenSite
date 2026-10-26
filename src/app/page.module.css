@@ -24,9 +24,13 @@
   text-align: center;
 }
 
+/* Fixed square box so the photo's space is reserved before it loads */
 .profileWrapper {
   position: relative;
-  display: inline-block;
+  display: block;
+  width: min(340px, 100%);
+  aspect-ratio: 1;
+  margin: 0 auto;
 }
 
 .profileWrapper::before {
@@ -44,9 +48,8 @@
   z-index: 1;
   display: block;
   width: 100%;
-  max-width: 340px;
-  height: auto;
-  margin: 0 auto;
+  height: 100%;
+  object-fit: cover;
   border: 8px solid rgba(38, 156, 212, 0.85);
   border-radius: 50%;
   transition: transform 0.35s ease, box-shadow 0.35s ease;

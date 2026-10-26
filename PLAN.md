@@ -34,16 +34,16 @@ Jake's personal portfolio site, live on GitHub Pages at `https://xenzoro.github.
 |---|---|---|
 | Baseline | 3 Lighthouse Mobile runs of the current live site saved in the handbook, median logged | done |
 | Scaffold | Next.js App Router, TypeScript, static export with `basePath: "/XenSite"`, builds clean | done |
-| Layout | One navbar component (desktop and mobile), fonts through `next/font`, shared on every page | planned |
-| Home | Intro, project grid with live tag search, contact card | planned |
-| Projects feed | Every project from `project-cards`, ordered by `sort_order` | planned |
-| Project detail | One prebuilt page per project at `/projects/<slug>`, code excerpts, terminal replay or demo link | planned |
-| About | Content and photo gallery (carousel when a card has several photos) from `about-me` | planned |
-| Contact | Web3Forms form works from the static site | planned |
-| Code highlighting | Done at build time; no Prism scripts in the browser | planned |
-| Images | Converted to WebP or AVIF with width and height set; no image over 300 KB | planned |
-| Deploy | GitHub Action builds and publishes to Pages from main | planned |
-| After report | Lighthouse rerun, logged in the handbook's `nextjsMigration.md` | planned |
+| Layout | One navbar component (desktop and mobile), fonts through `next/font`, shared on every page | done |
+| Home | Intro, project grid with live tag search, contact card | done |
+| Projects feed | Every project from `project-cards`, ordered by `sort_order` | done |
+| Project detail | One prebuilt page per project at `/projects/<slug>`, code excerpts, terminal replay or demo link | done |
+| About | Content and photo gallery (carousel when a card has several photos) from `about-me` | done |
+| Contact | Web3Forms form works from the static site | built; a real submission is untested (Jake sends one from the live site) |
+| Code highlighting | Done at build time; no Prism scripts in the browser | done |
+| Images | Converted to WebP or AVIF with width and height set; no image over 300 KB | done |
+| Deploy | GitHub Action builds and publishes to Pages from main | ready; first run after Jake adds the secrets and merges |
+| After report | Lighthouse rerun, logged in the handbook's `nextjsMigration.md` | local build logged (Perf 91, A11y 100, BP 100, SEO 100); live rerun after merge |
 
 ## Architecture and stack
 
