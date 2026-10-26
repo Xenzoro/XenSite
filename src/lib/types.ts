@@ -27,9 +27,12 @@ export interface ProjectRow {
   demo_url: string | null;
 }
 
-/** A project after normalizing, with its slug resolved */
+export type Section = "main" | "fun";
+
+/** A project after normalizing and merging Supabase with portfolio.json manifests */
 export interface Project {
-  id: number;
+  /** Supabase row id; null for projects that only exist as a manifest */
+  id: number | null;
   slug: string;
   title: string;
   tools: string[];
@@ -39,6 +42,12 @@ export interface Project {
   codeSnippets: CodeSnippet[];
   terminalSession: TerminalStep[];
   demoUrl: string | null;
+  /** Optional link to a test or preview build */
+  testUrl: string | null;
+  /** Public repos only; private repos never get a link */
+  repoUrl: string | null;
+  section: Section;
+  sortOrder: number | null;
 }
 
 export interface GalleryItem {

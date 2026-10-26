@@ -3,7 +3,7 @@ import FeedFilter from "@/components/Project/FeedFilter";
 import styles from "@/components/Project/Feed.module.css";
 import ProjectContent from "@/components/Project/ProjectContent";
 import Tags from "@/components/Project/Tags";
-import { getProjects } from "@/lib/supabase";
+import { getProjects } from "@/lib/projects";
 import Link from "next/link";
 
 export const metadata: Metadata = {

@@ -1,0 +1,28 @@
+# Reusable workflow: asks Vercel to rebuild XenSite. Project repos call it on push to main
+# (see notify-xensite.yml for the caller to copy). The deploy hook URL comes from the
+# XENSITE_DEPLOY_HOOK secret in the calling repo and is never printed.
+name: Rebuild XenSite
+
+on:
+  workflow_call:
+    secrets:
+      XENSITE_DEPLOY_HOOK:
+        required: false
+
+permissions: {}
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Call the XenSite deploy hook
+        env:
+          HOOK: ${{ secrets.XENSITE_DEPLOY_HOOK }}
+        run: |
+          if [ -z "$HOOK" ]; then
+            echo "::warning::XENSITE_DEPLOY_HOOK is not set in this repo, so XenSite was not rebuilt."
+            exit 0
+          fi
+          curl --fail --silent --show-error --max-time 30 -X POST "$HOOK" > /dev/null
+          echo "XenSite rebuild requested."

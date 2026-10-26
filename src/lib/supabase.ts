@@ -1,6 +1,6 @@
 // Read only Supabase access, used during `next build`. Nothing here ships to the browser.
 import { cache } from "react";
-import { isValidSlug, slugify } from "./slug";
+import { slugify } from "./slug";
 import type { About, AboutRow, Project, ProjectRow } from "./types";
 
 function requireEnv(name: "NEXT_PUBLIC_SUPABASE_URL" | "NEXT_PUBLIC_SUPABASE_ANON_KEY"): string {
@@ -41,32 +41,18 @@ function toProject(row: ProjectRow): Project {
     codeSnippets: Array.isArray(row.code_snippets) ? row.code_snippets : [],
     terminalSession: Array.isArray(row.terminal_session) ? row.terminal_session : [],
     demoUrl: row.demo_url,
+    testUrl: null,
+    repoUrl: null,
+    section: "main",
+    sortOrder: row.sort_order,
   };
 }
 
-/** Every project, ordered by `sort_order`. Fails if two projects share a slug. */
-export const getProjects = cache(async (): Promise<Project[]> => {
+/** Every `project-cards` row, ordered by `sort_order`. Merged with manifests in projects.ts, which checks slugs. */
+export const getProjectRows = cache(async (): Promise<Project[]> => {
   const rows = await select<ProjectRow>("project-cards", "select=*&order=sort_order.asc");
-  const projects = rows.map(toProject);
-
-  const seen = new Map<string, string>();
-  for (const project of projects) {
-    if (!isValidSlug(project.slug)) {
-      throw new Error(`"${project.title}" has the slug "${project.slug}", which is empty or not lowercase words joined by hyphens.`);
-    }
-    const other = seen.get(project.slug);
-    if (other) {
-      throw new Error(`"${other}" and "${project.title}" both have the slug "${project.slug}". Give one a different slug.`);
-    }
-    seen.set(project.slug, project.title);
-  }
-  return projects;
+  return rows.map(toProject);
 });
-
-export async function getProject(slug: string): Promise<Project | undefined> {
-  const projects = await getProjects();
-  return projects.find((project) => project.slug === slug);
-}
 
 export const getAbout = cache(async (): Promise<About> => {
   const rows = await select<AboutRow>("about-me", "id=eq.1&select=*");
