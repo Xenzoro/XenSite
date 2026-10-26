@@ -91,6 +91,7 @@ Jake's personal portfolio site, live on GitHub Pages at `https://xenzoro.github.
 | `experimental.inlineCss` on | About 6 KB of CSS gzipped; removes render blocking requests (FCP 1.7s to 1.0s locally) and Pages only caches 10 minutes anyway | 2026-10-25 |
 | Navbar links prefetch on hover or focus, not when they enter the viewport | First visit downloads only the page itself (about 49 KB less); moved local mobile Perf from 86 to 91 | 2026-10-25 |
 | Archivo shipped as a Latin subset WOFF2 | Same glyphs the site uses, 19 KB instead of 89 KB | 2026-10-25 |
+| Vanilla site and `Prev-Tasks/` deleted from `nextjs`; their ESLint ignores removed | Port finished; everything stays in `vanillaPrototype` and a Prev-Tasks repo can still be cut from there | 2026-10-25 |
 
 ## Open questions (Jake decides)
 

@@ -4,8 +4,10 @@
 //                                    sized WebP files to public/media/ plus src/lib/generated/media.json.
 //                                    Runs before `npm run dev` and `npm run build`. Both outputs are gitignored.
 //                                    With --soft (used by dev) a failed refresh only warns if a manifest exists.
-//   node scripts/images.mjs local    Converts the original photos and logo (from project-files/ or the folder
-//                                    given after "local") into src/assets/. Run once; the output is committed.
+//   node scripts/images.mjs local <dir>
+//                                    Converts the original photos and logo in <dir> into src/assets/ and the
+//                                    favicon. The output is committed. The originals live in the vanillaPrototype
+//                                    branch under project-files/.
 
 import { createHash } from "node:crypto";
 import { existsSync } from "node:fs";
@@ -159,7 +161,8 @@ async function convertRemote() {
 
 const [mode, dir] = process.argv.slice(2);
 if (mode === "local") {
-  await convertLocal(path.resolve(root, dir ?? "project-files"));
+  if (!dir) throw new Error('Give the folder with the originals: node scripts/images.mjs local <dir>');
+  await convertLocal(path.resolve(root, dir));
 } else {
   try {
     await convertRemote();

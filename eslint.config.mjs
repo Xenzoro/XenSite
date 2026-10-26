@@ -12,9 +12,6 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
-    // Old vanilla site, removed at the end of the port:
-    "project-files/**",
-    "Prev-Tasks/**",
   ]),
 ]);
 
