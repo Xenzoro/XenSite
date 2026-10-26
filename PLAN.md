@@ -96,5 +96,4 @@ Jake's personal portfolio site, live on GitHub Pages at `https://xenzoro.github.
 ## Open questions (Jake decides)
 
 - Name of the new repo for `Prev-Tasks/` (cut from `vanillaPrototype` whenever Jake wants).
-- Final slug for each project (Claude proposes from titles, Jake approves before the column is filled).
 - Keep the `/XenSite` path, or move to a custom domain later.
