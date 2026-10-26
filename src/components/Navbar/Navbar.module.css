@@ -1,0 +1,288 @@
+/* Ported from the vanilla navbar.css */
+
+/* ── Desktop nav ──────────────────────────── */
+.desktopNav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: var(--nav-height);
+  padding: 14px;
+  background: var(--gradient-page);
+  border-bottom: 1px solid rgba(38, 156, 212, 0.35);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  /* The slide away on scroll depends on this transition */
+  transition: transform 0.5s ease;
+}
+
+.desktopHidden,
+:global(html[data-menu-open]) .desktopNav {
+  transform: translateY(-110%);
+}
+
+.liquidContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  width: 100%;
+  height: 100%;
+  padding: 0 2rem;
+}
+
+.logoContainer {
+  position: absolute;
+  left: -0.7rem;
+}
+
+.logo {
+  width: 100px;
+  height: auto;
+  filter: drop-shadow(0 0 6px rgba(38, 156, 212, 0.55));
+}
+
+/* Liquid link buttons */
+.link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+  height: 40px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 2px solid var(--color-accent);
+  border-radius: 50px;
+  background: transparent;
+  color: var(--color-accent);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.wide {
+  width: 150px;
+}
+
+.link span {
+  position: relative;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.link::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: conic-gradient(var(--color-accent) 0deg, var(--color-bg-light) 120deg, var(--color-accent) 240deg);
+  opacity: 0;
+  transform: scale(0);
+  transition: all 0.6s ease;
+}
+
+.link:hover {
+  border-radius: 10px;
+  background: rgba(38, 156, 212, 0.15);
+}
+
+.tiltRight:hover {
+  transform: rotate(5deg);
+}
+
+.tiltLeft:hover {
+  transform: rotate(-5deg);
+}
+
+.link:hover::before {
+  opacity: 0.5;
+  transform: scale(2);
+}
+
+/* Current page: filled blue with dark text */
+.active {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+  color: var(--color-bg);
+}
+
+/* ── Hamburger ────────────────────────────── */
+.hamburger {
+  position: fixed;
+  top: 20px;
+  right: 2rem;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 5px 15px;
+  border: none;
+  border-radius: 12px;
+  background-image: var(--gradient-page);
+  color: var(--color-text);
+  font-size: 2.5rem;
+  line-height: 1.5;
+  transition: border-radius 0.3s ease;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.hamburger::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: conic-gradient(var(--color-accent) 0deg, var(--color-bg-light) 120deg, var(--color-accent) 240deg);
+  opacity: 0;
+  transform: scale(0);
+  transition: all 0.6s ease;
+}
+
+.hamburger:hover {
+  border-radius: 18px;
+}
+
+.hamburger:hover::before {
+  opacity: 0.5;
+  transform: scale(2);
+}
+
+/* Blue glow while the menu is open and the icon is an X */
+.hamburgerOpen {
+  border: 2px solid var(--color-accent);
+  box-shadow: 0 0 18px rgba(38, 156, 212, 0.55);
+}
+
+.hamburgerIcon {
+  display: inline-block;
+  transform-origin: center;
+  transition: transform 0.3s ease;
+}
+
+.hamburger:hover .hamburgerIcon {
+  transform: scale(1.15);
+}
+
+/* ── Mobile menu ──────────────────────────── */
+.mobileNav {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  width: 75%;
+  max-width: 300px;
+  height: 100%;
+  background: linear-gradient(to bottom, #262626, var(--color-bg));
+  border-left: 1px solid rgba(38, 156, 212, 0.35);
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.4);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mobileHidden {
+  transform: translateX(100%);
+}
+
+.mobileList {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  height: 100%;
+  padding-top: 90px;
+}
+
+.mobileList .link {
+  justify-content: flex-start;
+  width: 100%;
+  height: auto;
+  padding: 14px 28px;
+  border: none;
+  border-bottom: 1px solid rgba(38, 156, 212, 0.25);
+  border-left: 3px solid transparent;
+  border-radius: 0;
+  background: transparent;
+  color: var(--color-text);
+  font-size: 0.95rem;
+  letter-spacing: 1px;
+  text-align: left;
+  transform: none;
+  transition: background 0.2s, border-left-color 0.2s;
+}
+
+.mobileList .link:last-child {
+  border-bottom: none;
+}
+
+.mobileList .link::before {
+  content: none;
+}
+
+.mobileList .link:hover,
+.mobileList .link:active {
+  border-left-color: var(--color-accent);
+  border-radius: 0;
+  background: rgba(38, 156, 212, 0.28);
+  transform: none;
+}
+
+.mobileList .active {
+  border-left-color: var(--color-accent);
+  background: rgba(38, 156, 212, 0.18);
+  color: var(--color-accent-light);
+}
+
+.mobileList .link:focus-visible {
+  outline-offset: -3px;
+}
+
+/* ── Responsive ───────────────────────────── */
+@media (max-width: 900px) {
+  .logoContainer {
+    left: -1.5rem;
+  }
+}
+
+@media (max-width: 1200px) {
+  .desktopNav {
+    display: none;
+  }
+}
+
+@media (min-width: 1201px) {
+  .hamburger {
+    top: 8px;
+    right: 1.5rem;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 500px) {
+  .hamburger {
+    top: 14px;
+    right: 1.25rem;
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 1.8rem;
+  }
+
+  .mobileNav {
+    width: 78%;
+    max-width: 280px;
+  }
+}

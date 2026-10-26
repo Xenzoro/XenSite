@@ -83,6 +83,7 @@ Jake's personal portfolio site, live on GitHub Pages at `https://xenzoro.github.
 | Whole port done in one agent run (Phases 2 to 5 in NEXT.md), committing after each stage | Jake wants one prompt, not repeated check ins | 2026-10-25 |
 | Slugs come from one `slugify(title)` function until the `slug` column exists; after that the column wins | The build never waits on the schema change, and the SQL fills the column with the same values, so URLs don't change | 2026-10-25 |
 | `Prev-Tasks/`, the vanilla files and the unused scripts are deleted from `nextjs` at the end of the port | All of it is preserved in `vanillaPrototype`; a separate Prev-Tasks repo can be cut from there anytime | 2026-10-25 |
+| Supabase Storage images are downloaded and converted to sized WebP by `scripts/images.mjs` before every dev and build run (output gitignored) | Gallery photos are up to 3.8 MB; Storage has no free resizing; keeps every image under 300 KB without committing copies | 2026-10-25 |
 
 ## Open questions (Jake decides)
 

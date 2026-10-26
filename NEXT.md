@@ -78,3 +78,4 @@
 | 2026-10-25 | Steps 3 to 6: Next.js 16.4.3 scaffolded on `nextjs` (App Router, TypeScript, ESLint, `src/`, no Tailwind) with the export config, `.env.example`, `.gitignore` and a placeholder home page. `npm run build` writes `out/index.html`; `npm run lint` passes |
 | 2026-10-25 | Phase 1 done. Phase 2 (layout and data) written |
 | 2026-10-25 | Phase 2 never started. NEXT.md rewritten so Phases 2 to 5 run in one go (Stages A to E) |
+| 2026-10-25 | Stage A: Archivo (local) and JetBrains Mono through `next/font`, theme tokens in `globals.css`, navbar ported (desktop liquid nav hides on scroll, hamburger menu with `aria-expanded`, Esc and focus return), layout with `<main>`, skip link and title template, typed `getProjects`, `getProject`, `getAbout`, `slugify` with duplicate and empty slug checks, `scripts/images.mjs` (local originals into `src/assets/`, Storage images into `public/media/` before each build) |
