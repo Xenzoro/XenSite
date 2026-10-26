@@ -113,6 +113,21 @@ async function convertRemote() {
     wanted.set(url, [...new Set([...(wanted.get(url) ?? []), ...variants])]);
   };
   for (const project of projects) want(project.image_url, "cover");
+  // Cover images named in shown portfolio.json manifests (snapshot from scripts/github.mjs, which runs first)
+  const githubSnapshot = path.join(root, "src/lib/generated/github.json");
+  if (existsSync(githubSnapshot)) {
+    const { repos = [] } = JSON.parse(await readFile(githubSnapshot, "utf8"));
+    for (const repo of repos) {
+      try {
+        const manifest = JSON.parse(repo.manifest);
+        if (manifest?.show === true && typeof manifest.image_url === "string" && /^https?:\/\//.test(manifest.image_url)) {
+          want(manifest.image_url, "cover");
+        }
+      } catch {
+        // Broken manifests are reported by the site build with a clearer message
+      }
+    }
+  }
   const about = aboutRows[0] ?? {};
   want(about.profile_photo_url, "profile");
   for (const item of Array.isArray(about.gallery) ? about.gallery : []) {

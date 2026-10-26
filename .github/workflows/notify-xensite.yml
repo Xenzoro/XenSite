@@ -1,0 +1,19 @@
+# Copy this file into a project repo's .github/workflows/ to rebuild XenSite whenever that repo's main
+# branch changes, so its portfolio.json and devlog/ posts show up on the site. The repo needs a secret
+# named XENSITE_DEPLOY_HOOK (see README.md). No timers: it only runs on push.
+name: Update XenSite
+
+on:
+  push:
+    branches: [main]
+
+permissions: {}
+
+jobs:
+  rebuild:
+    # XenSite itself already redeploys on every push through Vercel's Git integration, so it skips this
+    # and the file stays here as the example to copy.
+    if: github.repository != 'Xenzoro/XenSite'
+    uses: Xenzoro/XenSite/.github/workflows/rebuild-site.yml@main
+    secrets:
+      XENSITE_DEPLOY_HOOK: ${{ secrets.XENSITE_DEPLOY_HOOK }}

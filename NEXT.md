@@ -37,6 +37,10 @@
 
 ## For Jake
 
+- **GitHub token:** create a fine grained token (GitHub, Settings, Developer settings, Fine grained tokens): resource owner Xenzoro, All repositories, Contents read only. Put it in `.env.local` as `GITHUB_TOKEN=` and in Vercel (Project Settings, Environment Variables) as `GITHUB_TOKEN` for Production and Preview, then redeploy. Until then builds warn and skip manifests.
+- **Deploy hook:** in Vercel, Project Settings, Git, Deploy Hooks, create one for `main`. Add its URL as an Actions secret named `XENSITE_DEPLOY_HOOK` in every project repo that should rebuild the site, and copy `.github/workflows/notify-xensite.yml` into those repos. The reusable workflow is referenced at `@main`, so callers work once this branch is merged.
+- **XenSite card and devlog:** `portfolio.json` has `show: true`, so after the merge (with the token set) XenSite gets its own card on the home page, without a cover image, and the devlog post `devlog/2026-10-25-porting-to-nextjs.md` goes live. I wrote both; edit or set `show` to false if you'd rather not.
+- **charityWater and loreal-Project:** draft `portfolio.json` files are in the hand back. They reuse the existing Supabase slugs so they update the current cards instead of adding new ones.
 - **Word list size:** the word finder uses SCOWL up to size 60 (27,876 common words). Rare but valid words (the kind Wordscapes counts as bonus words) are missing. Going to size 70 roughly doubles the list and the download; say if you want it.
 
 ## Log
@@ -57,3 +61,4 @@
 | 2026-10-25 | Hosting switched to Vercel: base path removed (`src/lib/site.ts`), Pages workflow and `.nojekyll` deleted, docs updated |
 | 2026-10-25 | Phase 6 written into PLAN.md and NEXT.md; `funAndPosting` branched from `main` |
 | 2026-10-25 | Stage 1: "Fun" in the navbar, `/fun/` card page, `/fun/word-finder/` (letters and pattern inputs with labels and hints, letter tiles, polite status line, results grouped longest first with counts, Clear button), solver in `src/lib/wordFinder.ts` with 17 unit tests (`npm test`), SCOWL word list (27,876 words, 70 KB gzipped chunk loaded only by the word finder). Browser checks at 1400px and 375px: keyboard only, pattern, repeats, paste with spaces, no layout shift, no sideways scroll. SCOWL notice served at `/licenses/scowl.txt` and linked from the page; screen reader status waits for a pause in typing |
+| 2026-10-25 | Stage 2: `scripts/github.mjs` (repo list and manifests through the GitHub API, warning only without `GITHUB_TOKEN`), `portfolio.ts` validation and merge, `projects.ts` for pages, devlog routes with markdown rendered at build time, "Code on GitHub", "Test Build" and devlog links, `fun` section cards on `/fun/`, manifest cover images through the WebP pipeline, `rebuild-site.yml` and `notify-xensite.yml`, XenSite `portfolio.json` and first devlog post, README section, handbook `portfolioPosting.md`. 35 unit tests. Checked end to end with the real repo list plus XenSite's manifest, a devlog post and a private test repo injected locally (not committed): merge, private repo rule, highlighting, HTML stripping, 375px widths |

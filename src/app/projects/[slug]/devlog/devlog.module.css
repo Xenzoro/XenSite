@@ -1,0 +1,184 @@
+/* Devlog list and posts, in the style of the project detail page */
+
+.page {
+  min-height: 70vh;
+  padding: 60px 0 80px;
+}
+
+.page :global(.container) {
+  max-width: 820px;
+}
+
+.backLink {
+  display: inline-block;
+  margin-bottom: 24px;
+  color: var(--color-accent-light);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.backLink:hover {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
+
+.title {
+  margin-bottom: 12px;
+  color: var(--color-text);
+  font-size: 2.4rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.blueText {
+  color: var(--color-accent);
+}
+
+.date {
+  display: block;
+  margin-bottom: 28px;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* ── List ─────────────────────────────────── */
+.list {
+  margin: 32px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  padding: 24px 0;
+  border-bottom: 1px solid rgba(38, 156, 212, 0.25);
+}
+
+.item .date {
+  margin-bottom: 8px;
+}
+
+.itemTitle {
+  margin-bottom: 6px;
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.itemTitle a {
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.itemTitle a:hover {
+  color: var(--color-accent-light);
+  text-decoration: underline;
+}
+
+.summary {
+  margin: 0;
+  color: var(--color-text-body);
+}
+
+/* ── Post body ────────────────────────────── */
+.prose {
+  color: var(--color-text-body);
+  font-size: 1.02rem;
+  line-height: 1.75;
+}
+
+.prose h2,
+.prose h3,
+.prose h4 {
+  margin: 2em 0 0.6em;
+  color: var(--color-text);
+  font-weight: 800;
+}
+
+.prose h2 {
+  color: var(--color-accent);
+  font-size: 1.4rem;
+  text-transform: uppercase;
+}
+
+.prose a {
+  color: var(--color-accent-light);
+}
+
+.prose img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+}
+
+.prose blockquote {
+  margin: 1.5em 0;
+  padding: 0.5em 1.25em;
+  border-left: 3px solid var(--color-accent);
+  background: var(--color-surface);
+}
+
+.prose :not(pre) > code {
+  padding: 0.1em 0.4em;
+  border-radius: 6px;
+  background: var(--color-surface);
+  color: var(--color-text-soft);
+  font-size: 0.9em;
+}
+
+.prose pre {
+  max-width: 100%;
+  margin: 1.5em 0;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+}
+
+/* Wide tables scroll inside the post instead of widening the page on phones */
+.prose table {
+  display: block;
+  max-width: 100%;
+  margin: 1.5em 0;
+  overflow-x: auto;
+  border-collapse: collapse;
+}
+
+.prose th,
+.prose td {
+  padding: 8px 12px;
+  border: 1px solid var(--color-border);
+  text-align: left;
+}
+
+.pager {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(38, 156, 212, 0.25);
+}
+
+.pagerLink {
+  color: var(--color-accent-light);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.pagerLink:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 1.8rem;
+  }
+
+  .pager {
+    flex-direction: column;
+  }
+}

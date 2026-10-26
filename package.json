@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "predev": "node scripts/words.mjs && node scripts/images.mjs --soft",
+    "predev": "node scripts/words.mjs && node scripts/github.mjs --soft && node scripts/images.mjs --soft",
     "build": "next build",
-    "prebuild": "node scripts/words.mjs && npm run images",
+    "prebuild": "node scripts/words.mjs && node scripts/github.mjs && npm run images",
     "start": "next start",
     "lint": "eslint",
     "test": "node --test \"src/**/*.test.ts\"",
@@ -19,9 +19,15 @@
     "next": "16.4.3",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "refractor": "^5.0.0"
+    "refractor": "^5.0.0",
+    "rehype-stringify": "^10.0.1",
+    "remark-gfm": "^4.0.1",
+    "remark-parse": "^11.0.0",
+    "remark-rehype": "^11.1.2",
+    "unified": "^11.0.5"
   },
   "devDependencies": {
+    "@types/hast": "^3.0.5",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

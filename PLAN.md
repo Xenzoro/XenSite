@@ -48,9 +48,9 @@ Jake's personal portfolio site, hosted on Vercel (moved from GitHub Pages at the
 | After report | Lighthouse rerun, logged in the handbook's `nextjsMigration.md` | local build logged (Perf 91, A11y 100, BP 100, SEO 100); live rerun after merge |
 | Fun tab | `/fun/` lists side projects as cards; "Fun" in the navbar (desktop and mobile) | done |
 | Word finder | `/fun/word-finder/`: up to 7 letters, every 3+ letter word makeable from them, grouped by length, optional `_a_e` pattern, fully in the browser, solver unit tested | done |
-| Project manifests | `portfolio.json` in a repo adds or overrides a project at build time; broken manifests and duplicate slugs fail the build; no `GITHUB_TOKEN` only warns | planned |
-| Devlogs | `devlog/*.md` in a shown repo renders at `/projects/<slug>/devlog/` and per post | planned |
-| Rebuild on push | Reusable workflow calls the Vercel deploy hook from `XENSITE_DEPLOY_HOOK`; how to in the handbook | planned |
+| Project manifests | `portfolio.json` in a repo adds or overrides a project at build time; broken manifests and duplicate slugs fail the build; no `GITHUB_TOKEN` only warns | built; live once Jake adds `GITHUB_TOKEN` and the deploy hook |
+| Devlogs | `devlog/*.md` in a shown repo renders at `/projects/<slug>/devlog/` and per post | built; live once Jake adds `GITHUB_TOKEN` and the deploy hook |
+| Rebuild on push | Reusable workflow calls the Vercel deploy hook from `XENSITE_DEPLOY_HOOK`; how to in the handbook | built; live once Jake adds `GITHUB_TOKEN` and the deploy hook |
 
 ## Architecture and stack
 
@@ -106,6 +106,15 @@ Jake's personal portfolio site, hosted on Vercel (moved from GitHub Pages at the
 | Unit tests use Node's built in runner (`npm test` runs `node --test` on `src/**/*.test.ts`, with Node's TypeScript stripping) | No new test dependency; tests import `./x.ts` directly (`allowImportingTsExtensions` in tsconfig) | 2026-10-25 |
 | The word list is generated before dev and build by `scripts/words.mjs` into a gitignored module that the word finder imports lazily | Ships as its own chunk (about 70 KB gzipped) that only `/fun/word-finder/` loads, after first paint; no network calls beyond the site's own files | 2026-10-25 |
 | "Fun" sits between Projects and About Me in the navbar; tilts keep alternating | Groups the work pages together | 2026-10-25 |
+| GitHub data is fetched by `scripts/github.mjs` before the build into a gitignored snapshot; `src/lib/portfolio.ts` validates and merges it during the build | One fetch per build that the image script can also use for manifest cover images; the merge logic stays pure and unit tested | 2026-10-25 |
+| Manifests: `slug`, `title`, `summary`, `tags` required when `show` is true; `live`, `test` (a URL to a test or preview build), `section` and the `project-cards` style fields optional; unknown fields warn, wrong types fail | Catches typos in the fields that matter without breaking builds over extra fields | 2026-10-25 |
+| A manifest that matches a Supabase slug overrides only the fields it gives; `live: null` removes a demo link | Repos can update their card without touching Supabase | 2026-10-25 |
+| Projects without a sort order go after the Supabase ones, most recently pushed first; forks are ignored | New work shows up without anyone choosing a number | 2026-10-25 |
+| Manifest `image_url` must be a public http(s) URL; it goes through the same WebP pipeline as Supabase images | Keeps the 300 KB image rule for posted projects too | 2026-10-25 |
+| Devlog posts need a date (front matter or `YYYY-MM-DD-` file name prefix); raw HTML in markdown is dropped; code blocks are highlighted at build time | Newest first ordering needs a date, and dropping HTML keeps posts safe to render | 2026-10-25 |
+| When no project has devlog posts yet, each devlog route builds one placeholder page that renders the 404 page (`noindex`) | A static export fails on a dynamic route with no pages | 2026-10-25 |
+| XenSite's own `notify-xensite.yml` skips itself (`if: github.repository != 'Xenzoro/XenSite'`) | Vercel already redeploys XenSite on every push; calling the hook too would build twice | 2026-10-25 |
+| Project pages for public repos get "Code on GitHub"; `fun` section projects link back to `/fun/` | Matches the private repo rule and keeps the Fun tab's navigation consistent | 2026-10-25 |
 
 ## Open questions (Jake decides)
 

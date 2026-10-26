@@ -1,0 +1,17 @@
+{
+  "show": true,
+  "slug": "xensite",
+  "title": "XenSite",
+  "summary": "This portfolio. A static Next.js and TypeScript site that pulls project data from Supabase at build time, lets other repos post themselves through a portfolio.json, highlights code during the build, and hosts small browser projects like a word finder.",
+  "tags": ["Next.js", "TypeScript", "React", "Supabase", "CSS Modules"],
+  "live": "https://xensite-black.vercel.app/",
+  "section": "main",
+  "long_description": "XenSite started as plain HTML, CSS and JavaScript with Bootstrap, fetching everything from Supabase in the browser. I ported it to Next.js with a static export: every page is built ahead of time, so it arrives already filled in, and the Lighthouse mobile score went from 70 to 95.\n\nProjects can also post themselves. A repo with a portfolio.json and show set to true appears here on the next build, merged with the Supabase data, and markdown files in its devlog folder become posts like the ones on this page. Pushing to a project's main branch calls a deploy hook, so the site rebuilds without any timers.",
+  "code_snippets": [
+    {
+      "label": "src/lib/wordFinder.ts: can a word be made from the wheel's letters?",
+      "language": "typescript",
+      "code": "export function canMake(word: string, counts: readonly number[]): boolean {\n  const left = counts.slice();\n  for (const char of word) {\n    const index = char.charCodeAt(0) - 97;\n    if (index < 0 || index >= 26 || left[index] === 0) return false;\n    left[index]--;\n  }\n  return true;\n}"
+    }
+  ]
+}
