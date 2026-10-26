@@ -67,6 +67,10 @@ Each project's cover image is a custom generated diagram matching the site's dar
 
 Vercel is connected to this repo. Every push to `main` deploys to production, and every other branch gets its own preview URL. The three `NEXT_PUBLIC_` values from `.env.example` are set as Vercel environment variables.
 
+Live: https://xensite-black.vercel.app/
+
+The GitHub Pages address (https://xenzoro.github.io/XenSite/) only redirects to Vercel, keeping the rest of the path. `.github/workflows/pages-redirect.yml` publishes that redirect page; it runs when the workflow file changes or by hand from the Actions tab. One time setup: repo **Settings > Pages > Build and deployment > Source** must be **GitHub Actions**.
+
 ## Folders
 
 - `src/app/`: routes, one folder per page, with their CSS Modules

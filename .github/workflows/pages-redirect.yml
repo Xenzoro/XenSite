@@ -1,0 +1,77 @@
+# GitHub Pages is only a pointer now: the real site is on Vercel.
+# This publishes a tiny redirect page (no site build) so old
+# https://xenzoro.github.io/XenSite/... links land on the same page on Vercel.
+# One time setup: repo Settings > Pages > Build and deployment > Source: "GitHub Actions".
+name: GitHub Pages redirect to Vercel
+
+on:
+  push:
+    branches: [main]
+    paths: [".github/workflows/pages-redirect.yml"]
+  workflow_dispatch: # lets you run it by hand from the Actions tab
+
+permissions:
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+env:
+  TARGET: https://xensite-black.vercel.app
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - id: pages
+        uses: actions/configure-pages@v6
+
+      - name: Write redirect page
+        env:
+          # The Pages path prefix, for example "/XenSite"
+          BASE_PATH: ${{ steps.pages.outputs.base_path }}
+        run: |
+          mkdir site
+          cat > site/index.html <<HTML
+          <!doctype html>
+          <html lang="en">
+          <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <title>Moved to ${TARGET}</title>
+          <meta name="robots" content="noindex">
+          <link rel="canonical" href="${TARGET}/">
+          <script>
+            // Keep the rest of the path, the query and the hash: /XenSite/a?b#c -> TARGET/a?b#c
+            var prefix = "${BASE_PATH}";
+            var path = location.pathname;
+            if (prefix && path.toLowerCase().indexOf(prefix.toLowerCase()) === 0) path = path.slice(prefix.length);
+            if (path.charAt(0) !== "/") path = "/" + path;
+            if (path.slice(-11) === "/index.html") path = path.slice(0, -10);
+            location.replace("${TARGET}" + path + location.search + location.hash);
+          </script>
+          <meta http-equiv="refresh" content="1; url=${TARGET}/">
+          </head>
+          <body>
+          <p>This site moved to <a href="${TARGET}/">${TARGET}</a>.</p>
+          </body>
+          </html>
+          HTML
+          # Pages serves 404.html for every path that doesn't exist, so deep links redirect too
+          cp site/index.html site/404.html
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
