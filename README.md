@@ -1,45 +1,77 @@
 # Jacob Martinez's Portfolio
 
-This is my personal portfolio site. It's built to actually show the work, not just list it: coursework and personal projects across C++, x86-64 Assembly, Java, and web development.
+My personal portfolio site, hosted on Vercel. It's built to actually show the work, not just list it: coursework and personal projects across C++, x86-64 Assembly, Java, and web development, with real code excerpts and captured terminal output.
 
 ## Tech stack
 
-Vanilla HTML, CSS, and JavaScript. No framework, no build step. Bootstrap handles layout and the grid. Supabase (Postgres) is the backend for all project data and image storage. GSAP runs the animations. Prism.js does syntax highlighting on code snippets.
+- **Next.js 16** (App Router) with **TypeScript**, built as a static export (`output: "export"`) and hosted on Vercel.
+- **CSS Modules** per component, plus `src/app/globals.css` for the theme tokens. No Bootstrap.
+- **Supabase** (Postgres and Storage) holds the project data and images. The site only reads from it.
+- **GSAP** and **Lenis** for the home page intro and smooth scrolling, skipped when the visitor prefers reduced motion.
+- **refractor** (Prism in Node) highlights code excerpts during the build, so no highlighting script reaches the browser.
+- **sharp** converts images to WebP.
 
-## How the project data works
+## Run it
 
-The homepage grid is driven entirely by a Supabase table called `project-cards`. Columns:
+```bash
+npm install
+cp .env.example .env.local   # then fill in the three values
+npm run dev                  # http://localhost:3000
+npm run lint
+npm run build                # static site in out/
+```
 
-- `title`
-- `tools_used` — array of tags
-- `blurb`
-- `image_url`
-- `sort_order`
-- `long_description`
-- `code_snippets` — jsonb
-- `terminal_session` — jsonb
-- `demo_url`
+`.env.local` needs `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` and `NEXT_PUBLIC_WEB3FORMS_KEY`. If one is missing, the build stops with a message naming it.
 
-Every project also has its own detail page (`detail.html?id=`) that pulls from the same row and renders the full write-up, real code excerpts, and then either a terminal replay or a link to a live demo, depending on what that project actually has.
+## How the data flows
 
-The tag search on the homepage isn't a hardcoded list of filter buttons. It pulls whatever tags actually exist in the data, live, so it can't drift out of sync with the projects.
+Everything is fetched once, at build time:
+
+1. `npm run build` first runs `scripts/images.mjs`. It reads both Supabase tables, downloads every image they point to from Storage, and writes sized WebP copies to `public/media/` plus a manifest in `src/lib/generated/media.json`. Both are gitignored and rebuilt every time.
+2. `next build` renders every page. `src/lib/supabase.ts` reads the tables (`getProjects`, `getProject`, `getAbout`) and `src/lib/media.ts` swaps Storage URLs for the local WebP files.
+3. The result in `out/` is plain HTML, CSS and JS. Pages arrive already filled in.
+
+Changing data in Supabase needs a rebuild to show up (push to `main`, or rerun the deploy workflow).
+
+### Tables
+
+`project-cards`: `title`, `tools_used` (array of tags), `blurb`, `image_url`, `sort_order`, `long_description`, `code_snippets` (jsonb list of `{ label, language, code }`), `terminal_session` (jsonb list of `{ input, output }`), `demo_url`, and an optional `slug`.
+
+`about-me`: `profile_photo_url` and `gallery` (jsonb list of `{ caption, images }`).
+
+Row level security is on with a public read only policy. Any writes happen by hand in Supabase.
+
+## Pages
+
+- `/`: intro, the featured project grid with live tag search (tags come from the data, so they can't drift), and a contact card.
+- `/projects/`: every project in full, with search.
+- `/projects/<slug>/`: one prebuilt page per project: write up, code excerpts, then a terminal replay or a live demo link, depending on what the project has. The slug is the `slug` column when set, otherwise it comes from the title (`src/lib/slug.ts`). The build fails if two projects share a slug.
+- `/about/`: about me, with a photo gallery. Cards with several photos get a small carousel and open in a lightbox.
+- `/contact/`: a Web3Forms contact form. The Web3Forms access key is public by design; it only lets the form send to my inbox.
+- `/detail.html?id=N`: old links from the vanilla site redirect to the matching `/projects/<slug>/`.
 
 ## The code and terminal output are real
 
-Code snippets and terminal output on the detail pages come straight from the actual source repos and actual program runs. None of it is invented. Where a project has a terminal section, it's labeled as captured output from a real run, not a live execution environment, since nothing on the page is actually running code.
+Code snippets and terminal output come straight from the actual source repos and actual program runs. Where a project has a terminal section, it's labeled as captured output from a real run, not a live terminal, since nothing on the page actually runs code.
 
 ## Cover images
 
-Each project's cover image is a custom generated diagram matching the site's dark theme, meant to represent what the project actually does. This is mostly for the C++ and Assembly projects, since those don't have any real visual output to screenshot.
+Each project's cover image is a custom generated diagram matching the site's dark theme, mostly for the C++ and Assembly projects, which have no real visual output to screenshot.
 
-## About page
+## Images
 
-The about me page pulls from its own Supabase table (`about-me`), including a photo gallery at the bottom. Cards with more than one photo get a small carousel instead of just showing a single image.
+- Photos and the logo used directly by the pages live in `src/assets/` as WebP (made once with `node scripts/images.mjs local <folder of originals>`).
+- Storage images are converted on every build, as above. Nothing over 300 KB ships.
 
-## Mobile
+## Deploy
 
-The site is responsive. Mobile gets its own nav menu instead of just squeezing the desktop one down.
+Vercel is connected to this repo. Every push to `main` deploys to production, and every other branch gets its own preview URL. The three `NEXT_PUBLIC_` values from `.env.example` are set as Vercel environment variables.
 
-## Backend notes
+## Folders
 
-Supabase handles both the data and the image storage. Row level security is on, with a public read-only policy. There's no public write access. Any writes to the data happen manually through Supabase directly.
+- `src/app/`: routes, one folder per page, with their CSS Modules
+- `src/components/`: Navbar, Home, Project and About components
+- `src/lib/`: Supabase reads, types, slugs, media lookup, highlighting
+- `src/assets/`: committed WebP photos and logo
+- `public/`: resume PDF
+- `scripts/images.mjs`: image conversion
