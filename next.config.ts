@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 import { BASE_PATH } from "./src/lib/site";
 
 const nextConfig: NextConfig = {
-  // Static export for GitHub Pages, served from https://xenzoro.github.io/XenSite/
+  // Static export, hosted on Vercel at the domain root (see src/lib/site.ts)
   output: "export",
   basePath: BASE_PATH,
   trailingSlash: true,

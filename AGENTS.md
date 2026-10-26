@@ -17,7 +17,7 @@ You are helping Jake (GitHub: Xenzoro) with XenSite, his portfolio site. Before 
 
 ```bash
 npm install
-npm run dev     # http://localhost:3000/XenSite
+npm run dev     # http://localhost:3000
 npm run lint
 npm run build   # static export into out/ (runs scripts/images.mjs first)
 ```
@@ -31,9 +31,9 @@ This is Next.js 16, which may differ from what you know. Check the docs bundled 
 - `src/app/`: routes (home, `projects/`, `projects/[slug]/`, `about/`, `contact/`, `not-found.tsx`) with their CSS Modules, plus `detail.html/route.ts`, which builds the redirect page for old `detail.html?id=N` links.
 - `src/components/`: `Navbar/`, `Home/`, `Project/` (code excerpts, terminal replay, feed search), `About/` (gallery and lightbox). Only the interactive pieces are client components.
 - `src/lib/`: `supabase.ts` (build time reads), `types.ts`, `slug.ts`, `media.ts` (Storage URL to local WebP), `highlight.ts` (refractor), `site.ts` (base path and site name).
-- `src/assets/`: committed WebP photos and logo. `public/`: resume PDF and `.nojekyll`.
+- `src/assets/`: committed WebP photos and logo. `public/`: resume PDF.
 - Generated and gitignored: `public/media/` and `src/lib/generated/media.json` from `scripts/images.mjs`, and `out/` from the build.
-- `.github/workflows/deploy.yml`: builds and publishes to Pages on push to `main`.
+- Hosting: Vercel, connected to this repo. Pushes to `main` deploy to production; every other branch gets a preview URL. The three `NEXT_PUBLIC_` values are Vercel environment variables.
 - The old vanilla site and `Prev-Tasks/` are gone from this branch; they are preserved in `vanillaPrototype`. Original photos for `node scripts/images.mjs local <dir>` are in that branch under `project-files/`.
 
 ## Hard rules

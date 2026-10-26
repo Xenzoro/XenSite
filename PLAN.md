@@ -4,7 +4,7 @@
 
 ## What it is
 
-Jake's personal portfolio site, live on GitHub Pages at `https://xenzoro.github.io/XenSite/`. It shows his coursework and personal projects (C++, x86 and MIPS Assembly, Java, web) with real code excerpts and captured terminal output, plus an about page and a contact form. This plan covers porting it from vanilla HTML, CSS and JS to Next.js.
+Jake's personal portfolio site, hosted on Vercel (moved from GitHub Pages at the end of the port). It shows his coursework and personal projects (C++, x86 and MIPS Assembly, Java, web) with real code excerpts and captured terminal output, plus an about page and a contact form. This plan covers porting it from vanilla HTML, CSS and JS to Next.js.
 
 ## Goals
 
@@ -19,21 +19,20 @@ Jake's personal portfolio site, live on GitHub Pages at `https://xenzoro.github.
 - Port every real page: home, projects feed, project detail, about, contact.
 - Same visual design and animations (GSAP, ScrollTrigger, Lenis).
 - Data from the existing Supabase tables, fetched at build time.
-- Static export deployed to GitHub Pages by a GitHub Action.
+- Static export hosted on Vercel, deployed from the repo on every push.
 - Removing dead files and moving `Prev-Tasks/` out of this repo.
 
 **Out (don't build these):**
 - A redesign. Visual changes beyond what the port needs go back to Jake.
 - `portfolio.json` automation, devlogs, the Fun Projects tab and the word finder (later phases, see webdevHandbook `plans/infrastructure.md`).
 - Any write access to Supabase from the site, logins, or a server.
-- Moving off GitHub Pages.
 
 ## Features
 
 | Feature | Done means | Status |
 |---|---|---|
 | Baseline | 3 Lighthouse Mobile runs of the current live site saved in the handbook, median logged | done |
-| Scaffold | Next.js App Router, TypeScript, static export with `basePath: "/XenSite"`, builds clean | done |
+| Scaffold | Next.js App Router, TypeScript, static export, builds clean | done |
 | Layout | One navbar component (desktop and mobile), fonts through `next/font`, shared on every page | done |
 | Home | Intro, project grid with live tag search, contact card | done |
 | Projects feed | Every project from `project-cards`, ordered by `sort_order` | done |
@@ -42,12 +41,12 @@ Jake's personal portfolio site, live on GitHub Pages at `https://xenzoro.github.
 | Contact | Web3Forms form works from the static site | built; a real submission is untested (Jake sends one from the live site) |
 | Code highlighting | Done at build time; no Prism scripts in the browser | done |
 | Images | Converted to WebP or AVIF with width and height set; no image over 300 KB | done |
-| Deploy | GitHub Action builds and publishes to Pages from main | ready; first run after Jake adds the secrets and merges |
+| Deploy | Vercel builds from the repo: main to production, other branches to previews | building |
 | After report | Lighthouse rerun, logged in the handbook's `nextjsMigration.md` | local build logged (Perf 91, A11y 100, BP 100, SEO 100); live rerun after merge |
 
 ## Architecture and stack
 
-- **Next.js** (App Router) with **TypeScript** and `output: "export"`, served from the `/XenSite` path on GitHub Pages.
+- **Next.js** (App Router) with **TypeScript** and `output: "export"`, hosted on Vercel at the domain root (no base path).
 - **Styling:** CSS Modules per component plus one global stylesheet for theme tokens. Bootstrap is removed.
 - **Data:** Supabase Postgres, read only. Tables `project-cards` (title, tools_used, blurb, image_url, sort_order, long_description, code_snippets, terminal_session, demo_url, plus a new `slug`) and `about-me`. Images live in Supabase Storage. Row level security allows public reads only.
 - **Build time fetch:** one helper in `src/lib/` reads both tables during `next build`. Changing data in Supabase needs a rebuild.
@@ -77,6 +76,7 @@ Jake's personal portfolio site, live on GitHub Pages at `https://xenzoro.github.
 | `Prev-Tasks/` moves to its own repo | 41 MB of old class exercises do not belong in the site | 2026-10-25 |
 | Port work happens on the `nextjs` branch | Big change; Jake merges after testing | 2026-10-25 |
 | Stay on GitHub Pages | Matches his other sites; see infrastructure plan | 2026-10-25 |
+| Host on Vercel instead of GitHub Pages (replaces the row above); base path removed, Pages workflow and `.nojekyll` deleted | Jake's call at merge time: env vars and previews per branch without Actions secrets | 2026-10-25 |
 | Next.js 16; scaffold defaults `cacheComponents` and `partialPrefetching` removed | Both need a server and break `output: "export"` | 2026-10-25 |
 | `agentRules: false` in `next.config.ts` | Stops `next dev` from writing its own block into AGENTS.md | 2026-10-25 |
 | ESLint ignores `project-files/` and `Prev-Tasks/` | Old vanilla code is not linted; it is removed at the end of the port | 2026-10-25 |
@@ -96,4 +96,4 @@ Jake's personal portfolio site, live on GitHub Pages at `https://xenzoro.github.
 ## Open questions (Jake decides)
 
 - Name of the new repo for `Prev-Tasks/` (cut from `vanillaPrototype` whenever Jake wants).
-- Keep the `/XenSite` path, or move to a custom domain later.
+- A custom domain later, or keep the Vercel one.

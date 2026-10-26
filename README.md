@@ -1,10 +1,10 @@
 # Jacob Martinez's Portfolio
 
-My personal portfolio site, live at https://xenzoro.github.io/XenSite/. It's built to actually show the work, not just list it: coursework and personal projects across C++, x86-64 Assembly, Java, and web development, with real code excerpts and captured terminal output.
+My personal portfolio site, hosted on Vercel. It's built to actually show the work, not just list it: coursework and personal projects across C++, x86-64 Assembly, Java, and web development, with real code excerpts and captured terminal output.
 
 ## Tech stack
 
-- **Next.js 16** (App Router) with **TypeScript**, built as a static export (`output: "export"`) and served from the `/XenSite` path on GitHub Pages.
+- **Next.js 16** (App Router) with **TypeScript**, built as a static export (`output: "export"`) and hosted on Vercel.
 - **CSS Modules** per component, plus `src/app/globals.css` for the theme tokens. No Bootstrap.
 - **Supabase** (Postgres and Storage) holds the project data and images. The site only reads from it.
 - **GSAP** and **Lenis** for the home page intro and smooth scrolling, skipped when the visitor prefers reduced motion.
@@ -16,7 +16,7 @@ My personal portfolio site, live at https://xenzoro.github.io/XenSite/. It's bui
 ```bash
 npm install
 cp .env.example .env.local   # then fill in the three values
-npm run dev                  # http://localhost:3000/XenSite
+npm run dev                  # http://localhost:3000
 npm run lint
 npm run build                # static site in out/
 ```
@@ -65,7 +65,7 @@ Each project's cover image is a custom generated diagram matching the site's dar
 
 ## Deploy
 
-`.github/workflows/deploy.yml` builds and publishes `out/` to GitHub Pages on every push to `main`. It needs the three `NEXT_PUBLIC_` values as repository secrets (Settings, Secrets and variables, Actions), and Pages set to deploy from GitHub Actions (Settings, Pages, Source).
+Vercel is connected to this repo. Every push to `main` deploys to production, and every other branch gets its own preview URL. The three `NEXT_PUBLIC_` values from `.env.example` are set as Vercel environment variables.
 
 ## Folders
 
@@ -73,5 +73,5 @@ Each project's cover image is a custom generated diagram matching the site's dar
 - `src/components/`: Navbar, Home, Project and About components
 - `src/lib/`: Supabase reads, types, slugs, media lookup, highlighting
 - `src/assets/`: committed WebP photos and logo
-- `public/`: resume PDF and `.nojekyll`
+- `public/`: resume PDF
 - `scripts/images.mjs`: image conversion
