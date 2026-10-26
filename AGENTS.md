@@ -22,6 +22,8 @@ npm run lint
 npm run build   # static export into out/
 ```
 
+This is Next.js 16, which may differ from what you know. Check the docs bundled in `node_modules/next/dist/docs/` before writing Next.js code.
+
 Until the port is finished, the old vanilla site still sits beside the Next.js app (`index.html`, `detail.html`, `project-files/`). Don't edit those; they get removed at the end of the port.
 
 ## Hard rules

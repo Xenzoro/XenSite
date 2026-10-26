@@ -31,3 +31,5 @@
 | Date | What happened |
 |---|---|
 | 2026-10-25 | Plan written. Repo renamed to XenSite; `vanillaPrototype` and `failedPrototype` snapshot branches created; `nextjs` branch started with PLAN.md, NEXT.md, AGENTS.md and CLAUDE.md |
+| 2026-10-25 | Steps 1 and 2: Baseline taken with the Lighthouse 13.4.1 CLI driving desktop Chrome (Mobile, 3 runs). Median Perf 70, A11y 91, BP 100, SEO 91, LCP 20.6s. Reports in the handbook's `reports/xensite/`, both handbook tables updated |
+| 2026-10-25 | Steps 3 to 6: Next.js 16.4.3 scaffolded on `nextjs` (App Router, TypeScript, ESLint, `src/`, no Tailwind) with the export config, `.env.example`, `.gitignore` and a placeholder home page. `npm run build` writes `out/index.html`; `npm run lint` passes |

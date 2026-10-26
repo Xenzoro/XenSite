@@ -32,8 +32,8 @@ Jake's personal portfolio site, live on GitHub Pages at `https://xenzoro.github.
 
 | Feature | Done means | Status |
 |---|---|---|
-| Baseline | 3 Lighthouse Mobile runs of the current live site saved in the handbook, median logged | planned |
-| Scaffold | Next.js App Router, TypeScript, static export with `basePath: "/XenSite"`, builds clean | planned |
+| Baseline | 3 Lighthouse Mobile runs of the current live site saved in the handbook, median logged | done |
+| Scaffold | Next.js App Router, TypeScript, static export with `basePath: "/XenSite"`, builds clean | done |
 | Layout | One navbar component (desktop and mobile), fonts through `next/font`, shared on every page | planned |
 | Home | Intro, project grid with live tag search, contact card | planned |
 | Projects feed | Every project from `project-cards`, ordered by `sort_order` | planned |
@@ -77,6 +77,9 @@ Jake's personal portfolio site, live on GitHub Pages at `https://xenzoro.github.
 | `Prev-Tasks/` moves to its own repo | 41 MB of old class exercises do not belong in the site | 2026-10-25 |
 | Port work happens on the `nextjs` branch | Big change; Jake merges after testing | 2026-10-25 |
 | Stay on GitHub Pages | Matches his other sites; see infrastructure plan | 2026-10-25 |
+| Next.js 16; scaffold defaults `cacheComponents` and `partialPrefetching` removed | Both need a server and break `output: "export"` | 2026-10-25 |
+| `agentRules: false` in `next.config.ts` | Stops `next dev` from writing its own block into AGENTS.md | 2026-10-25 |
+| ESLint ignores `project-files/` and `Prev-Tasks/` | Old vanilla code is not linted; it is removed at the end of the port | 2026-10-25 |
 
 ## Open questions (Jake decides)
 
