@@ -11,6 +11,7 @@ async function start() {
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   view.appendChild(renderer.domElement);
+  window.__puppetRenderer = renderer;
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
   camera.position.set(0, 1.4, 6.2);
@@ -26,6 +27,10 @@ async function start() {
     'sackboy_stitch_diffuse.png': 'puppit_stitch_diffuse.png',
     'zip_1_diffuse.png': 'zip_1_diffuse.png',
     'zip_pull_dirt.png': 'zip_pull_dirt.png',
+    'knit_2_diffuse.png': 'knit_2_diffuse.png',
+    'knit_2_bump.png': 'knit_2_bump.png',
+    'pink_stars.png': 'pink_stars.png',
+    'sackboy_stitch_bump.png': 'sackboy_stitch_bump.png',
   };
   const neutral = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWP4////fwAJ+wP9KobjigAAAABJRU5ErkJggg==';
   const manager = new THREE.LoadingManager();
@@ -39,7 +44,7 @@ async function start() {
     if (!object.isMesh) return;
     const materials = Array.isArray(object.material) ? object.material : [object.material];
     materials.forEach(material => {
-      if (material.name === 'sack_boy_weave_base') material.color.set('#bca17b');
+      if (material.name === 'sack_boy_weave_base') material.color.set('#ffffff');
       if (material.name === 'sack_boy_tongue') { material.map = null; material.color.set('#b8747f'); }
     });
   });
