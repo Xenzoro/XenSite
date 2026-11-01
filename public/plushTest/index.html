@@ -237,7 +237,8 @@
   [hidden], .item[hidden]{display:none!important}
   #fallback:not([hidden]){display:flex}
   .item{text-decoration:none}
-  #puppet-button{display:block;margin:0 auto;padding:12px 22px;border:2px solid var(--blue-hi);border-radius:24px;background:var(--blue-deep);color:var(--paper);font:inherit;cursor:pointer}
+  #puppet-button,#dance-button{display:block;margin:0 auto;padding:12px 22px;border:2px solid var(--blue-hi);border-radius:24px;background:var(--blue-deep);color:var(--paper);font:inherit;cursor:pointer}
+  #dance-button{margin-top:10px} #dance-button:disabled{opacity:.6;cursor:wait}
   #search{width:min(100%,340px)}
   #search label{display:block;margin-bottom:8px}
   #menu-query{width:100%;padding:12px;border:2px solid var(--blue-hi);border-radius:12px;background:var(--ink);color:var(--paper);font:inherit}
@@ -256,7 +257,8 @@
     </div>
   </div>
 
-  <button id="puppet-button" type="button" aria-controls="menu" aria-expanded="false">Open my menu</button></div>
+  <button id="puppet-button" type="button" aria-controls="menu" aria-expanded="false">Open my menu</button>
+  <button id="dance-button" type="button" aria-pressed="false" disabled>Loading dance…</button></div>
   <div class="menu-wrap">
     <h1>Menu, as a PopIT toy</h1>
     <form id="search" role="search" hidden><label for="menu-query">Search the menu</label><input id="menu-query" type="search" placeholder="Projects, resume, contact…" autocomplete="off" aria-controls="menu"></form>

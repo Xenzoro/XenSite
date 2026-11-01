@@ -86,3 +86,4 @@
 | 2026-10-25 | `slug` column added to `project-cards` in Supabase (migration `add_project_cards_slug`, approved by Jake), filled with the 9 slugs the build already used, unique and required. URLs unchanged |
 | 2026-10-25 | Hosting switched to Vercel: base path removed (`src/lib/site.ts`), Pages workflow and `.nojekyll` deleted, docs updated |
 | 2026-10-31 | Puppet demo: imported supplied character as textured GLB, retained PopIT styling, added puppet click and keyboard button to open menu, local menu search, real destination links, Escape focus return, and independent fallback navigation. |
+| 2026-10-31 | Replaced static character with supplied rigged dancing FBX. Added greeting on menu open, settle on search, optional looping Dance control, texture path mapping, and camera fit for mobile. DOM checks and lint pass; full build requires Supabase config. |

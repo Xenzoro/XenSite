@@ -93,7 +93,7 @@ Jake's personal portfolio site, hosted on Vercel (moved from GitHub Pages at the
 | Archivo shipped as a Latin subset WOFF2 | Same glyphs the site uses, 19 KB instead of 89 KB | 2026-10-25 |
 | Vanilla site and `Prev-Tasks/` deleted from `nextjs`; their ESLint ignores removed | Port finished; everything stays in `vanillaPrototype` and a Prev-Tasks repo can still be cut from there | 2026-10-25 |
 
-| Puppet demo uses the supplied USDZ converted to textured GLB on `puppet`, based on `plushTest` | Jake requested his character with an opening, searchable menu. Keep the existing PopIT design and use whole model motion because the asset has no rig. | 2026-10-31 |
+| Puppet demo uses the supplied animated FBX on `puppet`, based on `plushTest` | Jake requested his character with an opening, searchable menu. Keep the existing PopIT design and use the subsequently supplied rigged dance asset for movement. | 2026-10-31 |
 
 ## Open questions (Jake decides)
 

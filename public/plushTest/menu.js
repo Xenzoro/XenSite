@@ -30,11 +30,15 @@
     puppet.textContent = open ? 'Close my menu' : 'Open my menu';
     if (!open) { query.value = ''; note.textContent = 'Tap the puppet to open his menu.'; }
     filter();
+    document.dispatchEvent(new CustomEvent('puppet:menu', { detail: { open } }));
     if (open && focus) query.focus();
   }
   [disc, puppet].forEach(button => button.addEventListener('click', () => setOpen(!open, true)));
   document.getElementById('view').addEventListener('click', () => setOpen(!open, true));
-  query.addEventListener('input', filter);
+  query.addEventListener('input', () => {
+    filter();
+    document.dispatchEvent(new Event('puppet:search'));
+  });
   form.addEventListener('submit', event => {
     event.preventDefault();
     const match = items.find(item => !item.hidden);
