@@ -56,13 +56,36 @@ async function start() {
   model.updateMatrixWorld(true);
   const bounds = new THREE.Box3().setFromObject(model, true);
   const size = bounds.getSize(new THREE.Vector3());
-  const center = bounds.getCenter(new THREE.Vector3());
-  const scale = 2.5 / size.y;
-  model.scale.multiplyScalar(scale);
-  model.position.set(-center.x * scale, -bounds.min.y * scale, -center.z * scale);
+  window.__puppetDebug = { size: { x: size.x, y: size.y, z: size.z }, scale: 0 };
+  const targetWidth = 2.5 / 0.80;
+  const sx = targetWidth / size.x;
+  const sy = 2.5 / size.y;
+  model.scale.set(sx, sy, sy);
+  const c = new THREE.Box3().setFromObject(model, true);
+  model.position.set(-c.getCenter(new THREE.Vector3()).x, -c.min.y, -c.getCenter(new THREE.Vector3()).z);
+  window.__puppetDebug.scale = { x: sx, y: sy };
   const buddy = new THREE.Group();
   buddy.add(model);
   scene.add(buddy);
+  window.__puppetScene = scene;
+  window.__puppetModel = model;
+  window.__puppetCamera = camera;
+  window.__puppetScreenBox = () => {
+    const box = new THREE.Box3().setFromObject(model, true);
+    const v = new THREE.Vector3();
+    let minx = 1e9, maxx = -1e9, miny = 1e9, maxy = -1e9;
+    const r = view.getBoundingClientRect();
+    const corners = [];
+    for (const x of [box.min.x, box.max.x]) for (const y of [box.min.y, box.max.y]) for (const z of [box.min.z, box.max.z]) corners.push([x, y, z]);
+    for (const [x, y, z] of corners) {
+      v.set(x, y, z);
+      v.project(camera);
+      const px = (v.x + 1) / 2 * r.width;
+      const py = (1 - v.y) / 2 * r.height;
+      if (v.z < 1) { minx = Math.min(minx, px); maxx = Math.max(maxx, px); miny = Math.min(miny, py); maxy = Math.max(maxy, py); }
+    }
+    return { minx: Math.round(minx), miny: Math.round(miny), maxx: Math.round(maxx), maxy: Math.round(maxy), aspect: camera.aspect };
+  };
   const head = model.getObjectByName('Bip01_Head');
   const headBase = head?.quaternion.clone();
   let dancing = false;
