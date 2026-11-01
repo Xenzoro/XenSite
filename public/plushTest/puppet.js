@@ -33,12 +33,28 @@ async function start() {
     'pink_stars.png': 'pink_stars.png',
     'sackboy_stitch_bump.png': 'sackboy_stitch_bump.png',
   };
-  const neutral = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWP4////fwAJ+wP9KobjigAAAABJRU5ErkJggg==';
+  const fallbacks = {
+    'alluminum_1_diffuse.png': '#c9ccd2',
+    'sackboy_tongue_dirt.png': '#c96f7c',
+    'white_cotton_1_bump.png': '#808080',
+    'white_cotton_1_specular.png': '#b0b0b0',
+    'zip_1_bump.png': '#808080',
+    'zip_1_specular.png': '#a8a8a8',
+  };
+  const solid = hex => {
+    const c = document.createElement('canvas'); c.width = c.height = 2;
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = hex;
+    ctx.fillRect(0, 0, 2, 2);
+    return c.toDataURL('image/png');
+  };
   const manager = new THREE.LoadingManager();
   manager.setURLModifier(url => {
     if (/\.fbx(?:\?.*)?$/i.test(url)) return url;
     const name = url.replaceAll('\\', '/').split('/').pop();
-    return textures[name] ? `./textures/${textures[name]}` : neutral;
+    if (textures[name]) return `./textures/${textures[name]}`;
+    return fallbacks[name] ? solid(fallbacks[name])
+      : 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWP4////fwAJ+wP9KobjigAAAABJRU5ErkJggg==';
   });
   const model = await new FBXLoader(manager).loadAsync('./puppet-dance.fbx');
   model.traverse(object => {
