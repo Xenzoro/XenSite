@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>XenSite Felt Puppet</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;700&display=swap">
+<style>
+/* Layout: one night stage, the felt puppet on the left, his stitched menu on the right; stacks on phones */
+:root{padding-block:env(safe-area-inset-top,0px) env(safe-area-inset-bottom,0px);
+  --night:#151a2c; --floor:#232c48; --ink:#f4efe6; --muted:#b3bbd0;
+  --blue:#2a6fdb; /* swap in your exact site blue */
+  --blue-deep:#1d55ad;
+  --display:"Baloo 2",ui-rounded,system-ui,sans-serif;
+  --body:Nunito,system-ui,sans-serif;
+  color-scheme:dark;
+}
+html,body{height:100%}
+body{margin:0;background:radial-gradient(120% 90% at 30% 100%,var(--floor),var(--night) 62%);background-color:var(--night);color:var(--ink);font-family:var(--body);font-size:16px}
+.wrap{min-height:100%;box-sizing:border-box;padding-block:28px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:12px;max-width:1100px;margin:0 auto}
+header h1{font-family:var(--display);font-weight:800;font-size:clamp(30px,5vw,46px);margin:0;line-height:1.05;text-wrap:balance}
+header p{margin:6px 0 0;color:var(--muted);max-width:60ch}
+.stage{flex:1;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);align-items:center;gap:8px}
+#view{position:relative;width:100%;height:min(560px,68vh);min-height:360px}
+#view canvas{display:block;width:100%;height:100%;touch-action:manipulation}
+#fallback{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);text-align:center;padding:16px}
+.menu{--size:340px;position:relative;width:var(--size);height:var(--size);justify-self:center;max-width:100%}
+.felt{background:var(--blue);color:#fff;border:0;border-radius:50%;font-family:var(--display);font-weight:800;cursor:pointer;
+  box-shadow:inset 0 -6px 0 rgba(0,0,0,.18),inset 0 4px 0 rgba(255,255,255,.14),0 10px 24px rgba(0,0,0,.45);
+  background-image:repeating-linear-gradient(35deg,rgba(255,255,255,.05) 0 2px,transparent 2px 5px),repeating-linear-gradient(-35deg,rgba(0,0,0,.06) 0 2px,transparent 2px 6px)}
+.felt::after{content:"";position:absolute;inset:7px;border-radius:50%;border:2px dashed rgba(255,255,255,.55);pointer-events:none}
+.disc{position:absolute;left:50%;top:50%;width:128px;height:128px;margin:-64px 0 0 -64px;font-size:22px;transition:transform .45s cubic-bezier(.34,1.56,.64,1)}
+.menu.open .disc{transform:scale(.86)}
+.item{position:absolute;left:50%;top:50%;width:94px;height:94px;margin:-47px 0 0 -47px;display:grid;place-items:center;text-align:center;text-decoration:none;font-size:16px;line-height:1.1;
+  opacity:0;pointer-events:none;transform:scale(.3);
+  transition:transform .5s cubic-bezier(.34,1.56,.64,1) calc(var(--i)*45ms),opacity .25s ease calc(var(--i)*45ms),box-shadow .2s}
+.menu.open .item{opacity:1;pointer-events:auto;transform:rotate(var(--a)) translateX(calc(var(--size)*.37)) rotate(calc(var(--a)*-1))}
+.menu.open .item.on{transform:rotate(var(--a)) translateX(calc(var(--size)*.37)) rotate(calc(var(--a)*-1)) scale(1.12);
+  box-shadow:inset 0 -6px 0 rgba(0,0,0,.18),0 0 0 4px var(--ink),0 12px 30px rgba(0,0,0,.5)}
+.item:focus-visible,.disc:focus-visible{outline:3px solid var(--ink);outline-offset:5px}
+.note{margin:0;color:var(--muted);font-size:14px;min-height:1.4em}
+@media (max-width:720px){
+  .stage{grid-template-columns:1fr}
+  #view{height:340px;min-height:300px}
+  .menu{--size:min(320px,88vw)}
+}
+@media (prefers-reduced-motion:reduce){.item,.disc{transition:opacity .2s}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <h1>Hi, I'm Jake</h1>
+    <p>Open the menu and my felt buddy will point you where you want to go.</p>
+  </header>
+  <main class="stage">
+    <div id="view" aria-label="A felt plush puppet that points at the menu" role="img">
+      <div id="fallback" hidden>3D needs WebGL, which this browser has turned off. The menu still works.</div>
+    </div>
+    <nav class="menu" id="menu" aria-label="Main menu">
+      <a class="item felt" href="#projects" style="--i:0">Projects</a>
+      <a class="item felt" href="#fun" style="--i:1">Fun stuff</a>
+      <a class="item felt" href="#resume" style="--i:2">Resume</a>
+      <a class="item felt" href="#contact" style="--i:3">Contact</a>
+      <a class="item felt" href="#about" style="--i:4">About</a>
+      <button class="disc felt" id="disc" type="button" aria-expanded="false" aria-controls="menu">Menu</button>
+    </nav>
+  </main>
+  <p class="note" id="note" aria-live="polite">Hover, tap or press Tab and he points the way.</p>
+</div>
+
+<script>
+// Menu: works with or without 3D
+(function(){
+  const menu=document.getElementById('menu'),disc=document.getElementById('disc'),note=document.getElementById('note');
+  const items=[...menu.querySelectorAll('.item')];
+  items.forEach((el,i)=>{el.style.setProperty('--a',(-90+i*72)+'deg');el.tabIndex=-1;el.setAttribute('aria-hidden','true')});
+  window.puppetTarget=null;
+  function setOpen(open){
+    menu.classList.toggle('open',open);
+    disc.textContent=open?'Close':'Menu';
+    disc.setAttribute('aria-expanded',String(open));
+    items.forEach(el=>{el.tabIndex=open?0:-1;el.setAttribute('aria-hidden',String(!open));el.classList.remove('on')});
+    window.puppetTarget=open?disc:null;
+  }
+  function aim(el){
+    if(!menu.classList.contains('open'))return;
+    items.forEach(x=>x.classList.toggle('on',x===el));
+    window.puppetTarget=el;
+  }
+  disc.addEventListener('click',()=>setOpen(!menu.classList.contains('open')));
+  items.forEach(el=>{
+    ['pointerenter','focus','pointerdown'].forEach(ev=>el.addEventListener(ev,()=>aim(el)));
+    el.addEventListener('click',e=>{e.preventDefault();aim(el);note.textContent='On your site this opens '+el.textContent+'.'});
+  });
+  menu.addEventListener('pointerleave',()=>{if(menu.classList.contains('open')){items.forEach(x=>x.classList.remove('on'));window.puppetTarget=disc}});
+})();
+</script>
+
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+
+const view=document.getElementById('view');
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let renderer;
+try{renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});}
+catch(e){document.getElementById('fallback').hidden=false;throw e;}
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.toneMapping=THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure=1.05;
+renderer.shadowMap.enabled=true;
+renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+view.appendChild(renderer.domElement);
+
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(30,1,.1,100);
+camera.position.set(0,1.55,7.4);
+camera.lookAt(0,1.3,0);
+
+scene.add(new THREE.HemisphereLight(0xfff1e2,0x2a3352,1.25));
+const key=new THREE.DirectionalLight(0xffffff,2.3);
+key.position.set(3,5.5,4.5);key.castShadow=true;key.shadow.mapSize.set(1024,1024);
+key.shadow.camera.left=-3;key.shadow.camera.right=3;key.shadow.camera.top=4;key.shadow.camera.bottom=-1;key.shadow.radius=6;
+scene.add(key);
+const rim=new THREE.DirectionalLight(0x86b4ff,1.4);rim.position.set(-4,3,-3);scene.add(rim);
+const ground=new THREE.Mesh(new THREE.PlaneGeometry(12,12),new THREE.ShadowMaterial({opacity:.35}));
+ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;scene.add(ground);
+
+// Felt: soft fibers drawn into a texture, used for color variation and bump, plus fabric sheen
+function feltTexture(){
+  const c=document.createElement('canvas');c.width=c.height=512;const g=c.getContext('2d');
+  g.fillStyle='#e9e9e9';g.fillRect(0,0,512,512);
+  for(let i=0;i<10000;i++){
+    const x=Math.random()*512,y=Math.random()*512,a=Math.random()*Math.PI*2,l=4+Math.random()*12;
+    g.strokeStyle=Math.random()<.5?`rgba(255,255,255,${.25+Math.random()*.35})`:`rgba(110,110,110,${.1+Math.random()*.2})`;
+    g.lineWidth=.6+Math.random()*.8;g.beginPath();g.moveTo(x,y);
+    g.quadraticCurveTo(x+Math.cos(a+1)*l*.5,y+Math.sin(a+1)*l*.5,x+Math.cos(a)*l,y+Math.sin(a)*l);g.stroke();
+  }
+  const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(2,2);t.colorSpace=THREE.SRGBColorSpace;return t;
+}
+const tex=feltTexture();
+function felt(hex){
+  return new THREE.MeshPhysicalMaterial({color:hex,map:tex,bumpMap:tex,bumpScale:1.2,roughness:1,metalness:0,
+    sheen:1,sheenRoughness:.5,sheenColor:new THREE.Color(hex).lerp(new THREE.Color('#ffffff'),.55)});
+}
+const M={body:felt('#e07a3f'),belly:felt('#f3e2c4'),ear:felt('#b9552a'),cheek:felt('#f0a08a'),
+  white:felt('#fbf7ef'),pupil:felt('#1b1b22'),threadLight:felt('#fbf1de'),threadDark:felt('#6b3a22')};
+function mesh(geo,mat){const m=new THREE.Mesh(geo,mat);m.castShadow=true;m.receiveShadow=true;return m}
+
+const buddy=new THREE.Group();scene.add(buddy);
+const BC=new THREE.Vector3(0,1.25,0),BR=new THREE.Vector3(1,1.18,.92);
+const body=mesh(new THREE.SphereGeometry(1,64,48),M.body);body.scale.copy(BR);body.position.copy(BC);buddy.add(body);
+
+function bodyZ(x,y){return BR.z*Math.sqrt(Math.max(0,1-(x*x)/(BR.x*BR.x)-((y-BC.y)**2)/(BR.y*BR.y)))}
+function bodyNormal(x,y,z){return new THREE.Vector3(x/(BR.x**2),(y-BC.y)/(BR.y**2),z/(BR.z**2)).normalize()}
+function onBody(obj,x,y,lift){
+  const z=bodyZ(x,y),n=bodyNormal(x,y,z);
+  obj.position.set(x,y,z).addScaledVector(n,lift);
+  obj.lookAt(obj.position.clone().add(n));buddy.add(obj);return obj;
+}
+
+// Belly patch
+const PC={y:.9,z:.6},PR={x:.52,y:.55,z:.38};
+const belly=mesh(new THREE.SphereGeometry(1,48,32),M.belly);belly.scale.set(PR.x,PR.y,PR.z);belly.position.set(0,PC.y,PC.z);buddy.add(belly);
+function patchZ(x,y){const v=1-(x/PR.x)**2-((y-PC.y)/PR.y)**2;return v>0?PC.z+PR.z*Math.sqrt(v):-9}
+
+// Stitches: little thread dashes along a curve
+const stitchGeo=new THREE.CapsuleGeometry(.016,.05,4,8),UP=new THREE.Vector3(0,1,0);
+function stitch(points,mat){
+  for(let i=0;i<points.length-1;i+=2){
+    const a=points[i],b=points[i+1],m=mesh(stitchGeo,mat);
+    m.position.copy(a).add(b).multiplyScalar(.5);
+    m.quaternion.setFromUnitVectors(UP,b.clone().sub(a).normalize());buddy.add(m);
+  }
+}
+const ring=[];for(let i=0;i<=56;i++){const t=i/56*Math.PI*2,x=Math.cos(t)*.42,y=PC.y+Math.sin(t)*.44;ring.push(new THREE.Vector3(x,y,Math.max(bodyZ(x,y),patchZ(x,y))+.012))}
+stitch(ring,M.threadDark);
+const smile=[];for(let i=0;i<=14;i++){const x=-.2+i/14*.4,y=1.6-(.04-x*x)*2.2;smile.push(new THREE.Vector3(x,y,bodyZ(x,y)+.015))}
+stitch(smile,M.threadDark);
+const seam=[];for(let i=0;i<=40;i++){const t=-1.2+i/40*2.4,y=BC.y+Math.sin(t)*1.1,x=.0;seam.push(new THREE.Vector3(x,y,-bodyZ(x,y)-.012))}
+stitch(seam,M.threadLight);
+
+// Eyes with pupils that follow, and cheeks
+const discGeo=new THREE.CylinderGeometry(1,1,1,40);discGeo.rotateX(Math.PI/2);
+const pupils=[],eyes=[];
+[-1,1].forEach(s=>{
+  const eye=new THREE.Group();onBody(eye,s*.32,1.9,.02);
+  const w=mesh(discGeo,M.white);w.scale.set(.21,.21,.05);eye.add(w);
+  const p=new THREE.Group();p.position.z=.03;eye.add(p);
+  const pm=mesh(discGeo,M.pupil);pm.scale.set(.1,.1,.04);p.add(pm);
+  const hl=mesh(discGeo,M.white);hl.scale.set(.03,.03,.02);hl.position.set(.035,.04,.025);p.add(hl);
+  pupils.push(p);eyes.push(eye);
+  const ch=new THREE.Mesh(discGeo,M.cheek);ch.scale.set(.12,.09,.03);onBody(ch,s*.56,1.6,.005);
+});
+
+// Ears
+[-1,1].forEach(s=>{
+  const ear=mesh(new THREE.SphereGeometry(1,32,24),M.ear);ear.scale.set(.24,.42,.13);ear.position.set(s*.5,2.42,-.05);ear.rotation.z=-s*.38;buddy.add(ear);
+  const inner=mesh(new THREE.SphereGeometry(1,24,16),M.cheek);inner.scale.set(.13,.26,.05);inner.position.set(s*.5,2.42,.05);inner.rotation.z=-s*.38;buddy.add(inner);
+});
+
+// Feet
+[-1,1].forEach(s=>{const f=mesh(new THREE.SphereGeometry(1,32,20),M.ear);f.scale.set(.32,.17,.42);f.position.set(s*.42,.14,.2);buddy.add(f)});
+
+// Arms: a pivot at each shoulder; the right one points
+function makeArm(side){
+  const pivot=new THREE.Group();pivot.position.set(side*.86,1.38,.15);buddy.add(pivot);
+  const arm=mesh(new THREE.CapsuleGeometry(.15,.5,8,16),M.body);arm.rotation.z=Math.PI/2;arm.position.x=side*.42;pivot.add(arm);
+  const hand=mesh(new THREE.SphereGeometry(.19,32,24),M.belly);hand.position.x=side*.86;pivot.add(hand);
+  const cuff=[];for(let i=0;i<=24;i++){const t=i/24*Math.PI*2;cuff.push(new THREE.Vector3(side*.66,Math.cos(t)*.165,Math.sin(t)*.165))}
+  for(let i=0;i<cuff.length-1;i+=2){const a=cuff[i],b=cuff[i+1],m=mesh(stitchGeo,M.threadLight);m.position.copy(a).add(b).multiplyScalar(.5);m.quaternion.setFromUnitVectors(UP,b.clone().sub(a).normalize());pivot.add(m)}
+  return pivot;
+}
+const armR=makeArm(1),armL=makeArm(-1);
+armL.rotation.z=1.2;
+
+function resize(){
+  const w=view.clientWidth,h=view.clientHeight;if(!w||!h)return;
+  renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(view);resize();
+
+const REST=-1.2;let ang=REST,vel=0,turn=0,lean=0,look=0;
+const tmp=new THREE.Vector3();
+function aimAngle(el){
+  const r=renderer.domElement.getBoundingClientRect(),b=el.getBoundingClientRect();
+  armR.getWorldPosition(tmp);tmp.project(camera);
+  const sx=r.left+(tmp.x+1)/2*r.width,sy=r.top+(1-tmp.y)/2*r.height;
+  const bx=b.left+b.width/2,by=b.top+b.height/2;
+  return Math.max(-1.45,Math.min(1.35,Math.atan2(-(by-sy),bx-sx)));
+}
+const clock=new THREE.Clock();
+function frame(){
+  const t=clock.getElapsedTime(),target=window.puppetTarget;
+  const goal=target?aimAngle(target):REST;
+  if(reduce){ang=goal}else{vel+=(goal-ang)*.09;vel*=.78;ang+=vel}
+  armR.rotation.z=ang;
+  const k=reduce?1:.08;
+  turn+=((target?.28:0)-turn)*k;lean+=((target?-.06:0)-lean)*k;look+=((target?1:0)-look)*k;
+  buddy.rotation.y=turn+(reduce?0:Math.sin(t*.7)*.04);
+  buddy.rotation.z=lean;
+  armR.rotation.y=-.3*look;
+  armL.rotation.z=1.2+(reduce?0:Math.sin(t*1.6)*.06);
+  if(!reduce){buddy.position.y=Math.abs(Math.sin(t*1.8))*.04;body.scale.y=BR.y*(1+Math.sin(t*2)*.012)}
+  pupils.forEach(p=>{p.position.x=Math.cos(ang)*.06*look;p.position.y=Math.sin(ang)*.06*look-.02*(1-look)});
+  const blink=reduce?1:((t%4.2)<.12?.12:1);eyes.forEach(e=>e.scale.y=blink);
+  renderer.render(scene,camera);
+  requestAnimationFrame(frame);
+}
+frame();
+</script>
+</body>
+</html>
