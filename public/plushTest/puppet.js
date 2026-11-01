@@ -45,7 +45,11 @@ async function start() {
     if (!object.isMesh) return;
     const materials = Array.isArray(object.material) ? object.material : [object.material];
     materials.forEach(material => {
-      if (material.name === 'sack_boy_weave_base') material.color.set('#ffffff');
+      if (material.name === 'sack_boy_weave_base') {
+        material.color.set('#55e6e8');
+        material.shininess = 22;
+        if (material.specular) material.specular.set('#9fd0ce');
+      }
       if (material.name === 'sack_boy_tongue') { material.map = null; material.color.set('#b8747f'); }
     });
   });
