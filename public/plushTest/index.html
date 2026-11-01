@@ -234,12 +234,21 @@
   @media (prefers-reduced-motion:reduce){
     .item,.hub{ transition-duration:.01s; transition-delay:0s; }
   }
+  [hidden], .item[hidden]{display:none!important}
+  #fallback:not([hidden]){display:flex}
+  .item{text-decoration:none}
+  #puppet-button{display:block;margin:0 auto;padding:12px 22px;border:2px solid var(--blue-hi);border-radius:24px;background:var(--blue-deep);color:var(--paper);font:inherit;cursor:pointer}
+  #search{width:min(100%,340px)}
+  #search label{display:block;margin-bottom:8px}
+  #menu-query{width:100%;padding:12px;border:2px solid var(--blue-hi);border-radius:12px;background:var(--ink);color:var(--paper);font:inherit}
+  :is(a,button,input):focus-visible{outline:3px solid var(--paper);outline-offset:5px}
+  .stage{cursor:pointer}
 </style>
 </head>
 <body>
 <main>
-  <div class="stage" id="stage">
-    <div class="webgl-fallback" id="webglFallback">
+  <div class="character"><div class="stage" id="view" role="img" aria-label="Your puppet character">
+    <div class="webgl-fallback" id="fallback" hidden>
       <div>
         <h1>XenSite</h1>
         <p style="margin-top:8px;color:#b9c8f2;">Your browser needs WebGL to show the plush puppet. The menu still works on the right.</p>
@@ -247,416 +256,28 @@
     </div>
   </div>
 
+  <button id="puppet-button" type="button" aria-controls="menu" aria-expanded="false">Open my menu</button></div>
   <div class="menu-wrap">
     <h1>Menu, as a PopIT toy</h1>
-    <div class="board" id="board">
-      <button class="hub" id="hub" aria-expanded="false"><span>MENU</span></button>
+    <form id="search" role="search" hidden><label for="menu-query">Search the menu</label><input id="menu-query" type="search" placeholder="Projects, resume, contact…" autocomplete="off" aria-controls="menu"></form>
+    <div class="board" id="menu" role="navigation" aria-label="Main menu">
+      <button class="hub" id="disc" type="button" aria-controls="menu" aria-expanded="false"><span>MENU</span></button>
       <div class="filler f0" aria-hidden="true"></div>
       <div class="filler f1" aria-hidden="true"></div>
       <div class="filler f2" aria-hidden="true"></div>
       <div class="filler f3" aria-hidden="true"></div>
-      <button class="item i0" data-name="Projects"><span>Projects</span></button>
-      <button class="item i1" data-name="Fun stuff"><span>Fun<br>stuff</span></button>
-      <button class="item i2" data-name="Resume"><span>Resume</span></button>
-      <button class="item i3" data-name="Contact"><span>Contact</span></button>
-      <button class="item i4" data-name="About"><span>About</span></button>
+      <a class="item i0" href="/projects/"><span>Projects</span></a>
+      <a class="item i1" href="/"><span>Home</span></a>
+      <a class="item i2" href="/Jakes_Portf_09_21_26.pdf"><span>Resume</span></a>
+      <a class="item i3" href="/contact/"><span>Contact</span></a>
+      <a class="item i4" href="/about/"><span>About</span></a>
     </div>
+
     <p class="note" id="note" aria-live="polite">Pop the blue button in the middle to open the menu.</p>
   </div>
 </main>
 
-<script type="importmap">
-{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
-</script>
-<script type="module">
-import * as THREE from "three";
-
-/* ---------------- PopIT menu behavior ---------------- */
-const board = document.getElementById("board");
-const hub = document.getElementById("hub");
-const note = document.getElementById("note");
-const items = [...board.querySelectorAll(".item")];
-const ITEM_NOTES = {
-  Projects: "project gallery",
-  "Fun stuff": "Fun Projects tab",
-  Resume: "downloads your resume",
-  Contact: "contact form",
-  About: "About page"
-};
-
-let audioCtx = null;
-function popSound(strong){
-  try{
-    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
-    if (audioCtx.state === "suspended") audioCtx.resume();
-    const t0 = audioCtx.currentTime;
-    const dur = 0.17;
-    const freq = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    freq.type = "sine";
-    freq.frequency.setValueAtTime(strong ? 430 : 340, t0);
-    freq.frequency.exponentialRampToValueAtTime(90, t0 + dur);
-    gain.gain.setValueAtTime(strong ? 0.16 : 0.09, t0);
-    gain.gain.exponentialRampToValueAtTime(0.001, t0 + dur);
-    freq.connect(gain).connect(audioCtx.destination);
-    freq.start(t0);
-    freq.stop(t0 + dur + 0.02);
-  }catch(e){}
-}
-
-function setKeyboardOrder(open){
-  items.forEach(el=>{
-    if (open) el.tabIndex = 0;
-    else el.tabIndex = -1;
-  });
-}
-setKeyboardOrder(false);
-
-function openMenu(){
-  board.classList.add("open");
-  hub.setAttribute("aria-expanded","true");
-  setKeyboardOrder(true);
-  note.textContent = "Pop the bubbles to try the buttons.";
-  popSound(true);
-  if (window.puff) window.puff.squash = 0.09;
-}
-function closeMenu(){
-  board.classList.remove("open");
-  hub.setAttribute("aria-expanded","false");
-  items.forEach(el=>el.classList.remove("popped"));
-  setKeyboardOrder(false);
-  note.textContent = "Pop the blue button in the middle to open the menu.";
-  popSound(false);
-}
-hub.addEventListener("click", ()=>{
-  if (board.classList.contains("open")) closeMenu();
-  else openMenu();
-});
-
-let pointerActive = false;
-let pointerTarget = null;
-
-items.forEach(el=>{
-  el.addEventListener("click", ()=>{
-    if (!board.classList.contains("open")) return;
-    const popped = el.classList.toggle("popped");
-    const name = el.dataset.name;
-    popSound(popped ? true : false);
-    if (window.puff){
-      window.puff.squash = 0.09;
-      if (popped) window.puff.pointAt(el);
-    }
-    note.textContent = popped
-      ? `You popped ${name}. On your site it opens ${ITEM_NOTES[name]}.`
-      : "You popped it back out.";
-  });
-  el.addEventListener("pointerenter", ()=>{
-    if (!board.classList.contains("open")) return;
-    pointerActive = true;
-    pointerTarget = el;
-    if (window.puff) window.puff.pointAt(el);
-  });
-  el.addEventListener("pointerleave", ()=>{
-    pointerActive = false;
-    if (window.puff) window.puff.releaseArm();
-  });
-});
-
-/* ---------------- three.js scene ---------------- */
-const PROFILE = [
-  [0.02, 0.00],
-  [0.42, 0.02],
-  [0.66, 0.14],
-  [0.74, 0.38],
-  [0.70, 0.72],
-  [0.62, 1.00],
-  [0.70, 1.34],
-  [0.74, 1.62],
-  [0.70, 1.90],
-  [0.52, 2.10],
-  [0.25, 2.20],
-  [0.02, 2.24]
-];
-
-function rAt(y){
-  y = Math.max(PROFILE[0][1], Math.min(PROFILE[PROFILE.length-1][1], y));
-  for (let i=0;i<PROFILE.length-1;i++){
-    const [x0,y0] = PROFILE[i];
-    const [x1,y1] = PROFILE[i+1];
-    if (y >= y0 - 1e-9 && y <= y1 + 1e-9){
-      const t = (y - y0) / (y1 - y0 || 1);
-      return x0 + (x1 - x0) * t;
-    }
-  }
-  return PROFILE[0][0];
-}
-function rSlope(y){
-  const dy = 0.001;
-  return (rAt(y+dy) - rAt(y-dy)) / (2*dy);
-}
-function bodyNormal(phi, y){
-  const rp = rSlope(y);
-  const n = new THREE.Vector3(Math.sin(phi), -rp, Math.cos(phi));
-  return n.normalize();
-}
-function onBody(obj, phi, y, lift){
-  const r = rAt(y);
-  const n = bodyNormal(phi, y);
-  obj.position.set(
-    r*Math.sin(phi) + n.x*lift,
-    y + n.y*lift,
-    r*Math.cos(phi) + n.z*lift
-  );
-  const q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,0,1), n);
-  obj.quaternion.copy(q);
-}
-
-const stage = document.getElementById("stage");
-try{
-  const canvas = document.createElement("canvas");
-  stage.appendChild(canvas);
-  const renderer = new THREE.WebGLRenderer({ canvas, alpha:true, antialias:true });
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-  renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 60);
-  camera.position.set(0, 1.5, 7.2);
-  camera.lookAt(0, 1.2, 0);
-
-  scene.add(new THREE.AmbientLight(0xbfd0ff, 0.55));
-
-  const key = new THREE.DirectionalLight(0xfff4e0, 1.6);
-  key.position.set(2.5, 4, 3);
-  key.castShadow = true;
-  key.shadow.mapSize.set(1024,1024);
-  key.shadow.camera.left = -3; key.shadow.camera.right = 3;
-  key.shadow.camera.top = 4; key.shadow.camera.bottom = -1;
-  scene.add(key);
-
-  const fill = new THREE.DirectionalLight(0x88aaff, 0.5);
-  fill.position.set(-3, 2, 2);
-  scene.add(fill);
-
-  const ground = new THREE.Mesh(
-    new THREE.CircleGeometry(6, 48),
-    new THREE.ShadowMaterial({ opacity:0.25 })
-  );
-  ground.rotation.x = -Math.PI/2;
-  ground.position.y = 0;
-  ground.receiveShadow = true;
-  scene.add(ground);
-
-  /* felt texture */
-  function feltTexture(){
-    const c = document.createElement("canvas");
-    c.width = c.height = 512;
-    const g = c.getContext("2d");
-    g.fillStyle = "#ffffff";
-    g.fillRect(0,0,512,512);
-    for (let i=0;i<12000;i++){
-      const x = Math.random()*512, y = Math.random()*512;
-      const len = 2 + Math.random()*5;
-      const a = Math.random()*Math.PI;
-      const shade = 200 + Math.floor(Math.random()*55);
-      g.strokeStyle = `rgba(${shade},${shade},${shade},0.35)`;
-      g.lineWidth = 0.7;
-      g.beginPath();
-      g.moveTo(x,y);
-      g.lineTo(x + Math.cos(a)*len, y + Math.sin(a)*len);
-      g.stroke();
-    }
-    const tex = new THREE.CanvasTexture(c);
-    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-    tex.repeat.set(2,2);
-    return tex;
-  }
-  const felt = feltTexture();
-
-  function plushMat(color, sheen=1){
-    const m = new THREE.MeshPhysicalMaterial({
-      color,
-      roughness:0.85,
-      metalness:0,
-      sheen:sheen,
-      sheenRoughness:0.42,
-      sheenColor:new THREE.Color(0xffffff),
-      map:felt,
-      bumpMap:felt,
-      bumpScale:0.35
-    });
-    return m;
-  }
-
-  const puppet = new THREE.Group();
-  scene.add(puppet);
-
-  /* body */
-  const pts = PROFILE.map(([x,y])=>new THREE.Vector2(x,y));
-  const bodyGeo = new THREE.LatheGeometry(pts, 96);
-  const bodyMat = plushMat(0x2b2225, 1);
-  const body = new THREE.Mesh(bodyGeo, bodyMat);
-  body.castShadow = true;
-  body.receiveShadow = true;
-  puppet.add(body);
-
-  /* eyes */
-  function makeEyes(){
-    const eyes = new THREE.Group();
-    const whiteMat = new THREE.MeshPhysicalMaterial({
-      color:0xfbf7ef, roughness:0.5,
-      map:felt, bumpMap:felt, bumpScale:0.3
-    });
-    const pupilMat = new THREE.MeshStandardMaterial({ color:0x17171f, roughness:0.35 });
-    for (const s of [-1,1]){
-      const phi = s * 0.46;
-      const eye = new THREE.Mesh(new THREE.SphereGeometry(0.21, 32, 24), whiteMat);
-      eye.scale.set(1,1,0.3);
-      onBody(eye, phi, 1.62, 0.05);
-      const pupil = new THREE.Mesh(new THREE.SphereGeometry(0.085, 24, 18), pupilMat);
-      pupil.scale.set(1,1,0.35);
-      pupil.position.z = 0.14;
-      eye.add(pupil);
-      eyes.add(eye);
-    }
-    puppet.add(eyes);
-    return eyes;
-  }
-  const eyes = makeEyes();
-
-  /* arms (pivot groups) */
-  const armMat = plushMat(0x2b2225, 1);
-  const armGeo = new THREE.CapsuleGeometry(0.13, 0.6, 6, 16);
-  function makeArm(side){
-    const pivot = new THREE.Group();
-    const r = rAt(1.2);
-    pivot.position.set(side * (r - 0.03), 1.2, 0.1);
-    const mesh = new THREE.Mesh(armGeo, armMat);
-    mesh.castShadow = true;
-    mesh.position.y = -0.43;
-    pivot.add(mesh);
-    puppet.add(pivot);
-    return pivot;
-  }
-  const armL = makeArm(-1);
-  const armR = makeArm(1);
-
-  let armZ = 0.42, armV = 0;
-  let restR = 0.42, targetR = 0.42, aimActive = false;
-
-  /* feet */
-  const footMat = plushMat(0x2b2225, 1);
-  for (const s of [-1,1]){
-    const foot = new THREE.Mesh(new THREE.SphereGeometry(1, 24, 16), footMat);
-    foot.scale.set(0.3, 0.16, 0.38);
-    foot.position.set(s*0.38, 0.16, 0.2);
-    foot.castShadow = true;
-    puppet.add(foot);
-  }
-
-  /* stitch seams */
-  const threadMat = new THREE.LineDashedMaterial({
-    color:0xdfe6ff, dashSize:0.06, gapSize:0.045, opacity:0.85, transparent:true
-  });
-  function seam(y, inset=0){
-    const r = rAt(y) - inset;
-    const N = 128;
-    const arr = [];
-    for (let i=0;i<N;i++){
-      const a = (i/N) * Math.PI * 2;
-      arr.push(new THREE.Vector3(Math.sin(a)*r, y, Math.cos(a)*r));
-    }
-    const line = new THREE.LineLoop(
-      new THREE.BufferGeometry().setFromPoints(arr),
-      threadMat
-    );
-    line.computeLineDistances();
-    puppet.add(line);
-  }
-  seam(1.34, 0.012);
-  seam(0.02, 0.005);
-  seam(2.18, 0.02);
-
-  window.puff = {
-    squash: 0,
-    pointAt(el){
-      const rect = canvas.getBoundingClientRect();
-      const r = el.getBoundingClientRect();
-      const nx = ((r.left + r.width/2) - rect.left) / rect.width;
-      const ny = ((r.top + r.height/2) - rect.top) / rect.height;
-      const v = new THREE.Vector3(nx*2-1, -(ny*2-1), 0.5);
-      v.unproject(camera);
-      const dir = v.sub(camera.position).normalize();
-      const t = ((new THREE.Vector3(0,1.2,0).sub(camera.position)).dot(dir) === 0) ? 0 : 4;
-      const worldPoint = camera.position.clone().add(dir.multiplyScalar(7));
-      const shoulder = new THREE.Vector3(0.67, 1.2, 0.1);
-      const d = worldPoint.sub(shoulder);
-      let ang = Math.atan2(d.x, -d.y);
-      ang = Math.max(-1.15, Math.min(1.15, ang));
-      aimActive = true;
-      targetR = ang;
-    },
-    releaseArm(){
-      aimActive = false;
-      targetR = 0.42;
-    }
-  };
-
-  function resize(){
-    const w = stage.clientWidth, h = stage.clientHeight;
-    renderer.setSize(w, h, false);
-    camera.aspect = w / h;
-    camera.updateProjectionMatrix();
-  }
-  window.addEventListener("resize", resize);
-  resize();
-
-  /* animation loop */
-  let blinkT = 0, blinkTimer = 3, last = performance.now();
-  const clock = new THREE.Clock();
-
-  function frame(now){
-    requestAnimationFrame(frame);
-    const dt = Math.min(0.05, (now - last)/1000);
-    last = now;
-    const t = clock.getElapsedTime();
-
-    /* arm spring */
-    restR = targetR;
-    let a = (restR - armZ)*140 - armV*14;
-    armV += a*dt;
-    armZ += armV*dt;
-    armZ = Math.max(-1.15, Math.min(1.15, armZ));
-    armR.rotation.z = armZ;
-    armL.rotation.z = -0.42 + (pointerActive && aimActive ? 0 : 0.05*Math.sin(t*1.3));
-
-    /* squash */
-    const s = window.puff ? Math.max(0, window.puff.squash) : 0;
-    if (window.puff) window.puff.squash = Math.max(0, window.puff.squash - s*0.06);
-    const sq = 1 - s;
-    puppet.scale.set((1+s)*0.999, (1 + 0.012*Math.sin(t*1.7)) * sq, (1+s)*0.999);
-    puppet.position.y = 0.03*s;
-
-    /* blink */
-    blinkTimer -= dt;
-    if (blinkTimer <= 0 && blinkT <= 0){ blinkT = 0.18; blinkTimer = 2.5 + Math.random()*3.5; }
-    if (blinkT > 0){
-      blinkT -= dt;
-      const p = 1 - blinkT/0.18;
-      const sy = Math.max(0.12, Math.sin(p*Math.PI));
-      eyes.children.forEach(e=>e.scale.y = sy);
-    } else {
-      eyes.children.forEach(e=>e.scale.y = 1);
-    }
-
-    renderer.render(scene, camera);
-  }
-  requestAnimationFrame(frame);
-}catch(err){
-  console.error(err);
-  document.getElementById("webglFallback").classList.add("show");
-}
-</script>
-</body>
-</html>
+<script src="./menu.js"></script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<script type="module" src="./puppet.js"></script>
+</body></html>
