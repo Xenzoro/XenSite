@@ -8,6 +8,7 @@ async function start() {
     import('three'), import('three/addons/loaders/FBXLoader.js'),
   ]);
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setClearAlpha(0);
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   view.appendChild(renderer.domElement);
