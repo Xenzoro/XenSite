@@ -20,7 +20,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  TARGET: https://xensite-black.vercel.app
+  TARGET: https://xenzoro.vercel.app
 
 jobs:
   build:
