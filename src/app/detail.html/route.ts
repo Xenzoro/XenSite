@@ -1,12 +1,13 @@
 // Old links looked like detail.html?id=N. This builds a tiny static page that maps each id to its new /projects/<slug>/ URL.
 import { BASE_PATH } from "@/lib/site";
-import { getProjects } from "@/lib/supabase";
+import { getAllProjects } from "@/lib/projects";
 
 export const dynamic = "force-static";
 
 export async function GET() {
-  const projects = await getProjects();
-  const slugs = Object.fromEntries(projects.map((project) => [project.id, project.slug]));
+  const projects = await getAllProjects();
+  // Only Supabase rows have the numeric ids old links used
+  const slugs = Object.fromEntries(projects.filter((p) => p.id !== null).map((project) => [project.id, project.slug]));
   const projectsUrl = `${BASE_PATH}/projects/`;
 
   const html = `<!doctype html>

@@ -12,8 +12,9 @@ import markup from "refractor/markup";
 import nasm from "refractor/nasm";
 import python from "refractor/python";
 import sql from "refractor/sql";
+import typescript from "refractor/typescript";
 
-for (const language of [clike, markup, css, c, cpp, java, javascript, python, bash, sql, nasm]) {
+for (const language of [clike, markup, css, c, cpp, java, javascript, typescript, python, bash, sql, nasm]) {
   refractor.register(language);
 }
 
@@ -23,6 +24,8 @@ const ALIASES: Record<string, string> = {
   "c++": "cpp",
   html: "markup",
   js: "javascript",
+  ts: "typescript",
+  tsx: "typescript",
   py: "python",
   sh: "bash",
   shell: "bash",
@@ -34,7 +37,12 @@ export function resolveLanguage(language: string | undefined): string {
   return refractor.registered(resolved) ? resolved : "clike";
 }
 
+/** Highlighted syntax tree (hast) for a code excerpt */
+export function highlightTree(code: string, language: string | undefined) {
+  return refractor.highlight(code ?? "", resolveLanguage(language));
+}
+
 /** Highlighted HTML for a code excerpt. refractor escapes the source text. */
 export function highlight(code: string, language: string | undefined): string {
-  return toHtml(refractor.highlight(code ?? "", resolveLanguage(language)));
+  return toHtml(highlightTree(code, language));
 }

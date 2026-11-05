@@ -36,3 +36,34 @@
     font-size: 1.8rem;
   }
 }
+
+/* Devlog, repo and test build links under the title */
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: -8px 0 28px;
+  padding: 0;
+  list-style: none;
+}
+
+.pill {
+  display: inline-block;
+  padding: 9px 22px;
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-pill);
+  background: rgba(38, 156, 212, 0.08);
+  color: var(--color-accent-light);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: background 0.2s, color 0.2s, transform 0.2s;
+}
+
+.pill:hover {
+  background: var(--color-accent);
+  color: var(--color-bg);
+  transform: translateY(-2px);
+}

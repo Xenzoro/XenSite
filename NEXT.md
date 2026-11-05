@@ -1,73 +1,47 @@
-# Next: Phases 2 to 5, the whole port in one run
+# Next: Phase 6, Fun tab, word finder, project manifests and devlogs
 
 <!-- The current handoff. Read PLAN.md first for what the project is, its scope and its rules. -->
 
-**Goal:** Finish the Next.js port end to end in one run, so the `nextjs` branch is ready for Jake to test and merge. Delivers every PLAN.md feature from Layout through After report.
+**Goal:** Add a Fun Projects tab with a word finder, and let projects post themselves to the site from a `portfolio.json` in their own repo, with devlogs, rebuilding the site on push.
 
 ## How to run this
 
-- **Branch:** work on `nextjs`. Jake already chose it for this run, so don't ask.
-- **Don't stop to ask.** If something needs Jake (a secret, a dashboard setting, a decision listed under PLAN.md's Open questions), write it under "Hand back" and keep going with the rest.
-- **Save progress often.** After each stage: `npm run lint` and `npm run build` pass, run the `reviewer` subagent and fix "Must fix", then commit and push to `nextjs`. A restart must never lose more than one stage.
-- **Look before you port.** For each piece, read the matching old file in `project-files/` (HTML, CSS, JS) and keep the look and behavior the same. This is a port, not a redesign.
-- **Next.js 16:** check `node_modules/next/dist/docs/` before using an API you're unsure of.
-- Log each finished stage in the Log table below.
+- **Branch:** `funAndPosting` (Jake's answer for this run). Finish with one pull request into `main`.
+- **Don't stop to ask.** Decide sensibly, record the decision in PLAN.md, and put anything that needs Jake under "For Jake" below.
+- **After each stage:** `npm run lint`, `npm test` and `npm run build` pass, the `reviewer` subagent runs and every "Must fix" is fixed, then commit, push, and log it below.
+- Screenshots go in `.shots/` (gitignored). Read nothing outside this repo and `~/projects/webdevhandbook`.
+- Never put tokens, deploy hook URLs or keys in code, commits or chats. They live in `.env.local` and Vercel environment variables.
 
-## Stage A: layout and data
+## Stage 1: Fun tab and word finder
 
-1. **Fonts:** Archivo from `project-files/archivo.ttf` via `next/font/local` (copy it to `src/app/fonts/`), JetBrains Mono via `next/font/google`. Both as CSS variables; code uses JetBrains Mono, everything else Archivo.
-2. **Theme:** colors, spacing and the dark background from `main.css` and `navbar.css` become variables in `src/app/globals.css`. No Bootstrap.
-3. **Navbar:** port the desktop "liquid" nav and mobile hamburger into `src/components/Navbar/` (CSS Module). Only the toggle is a client component. `next/link` for Home, Projects, About Me, Contact. Hamburger has `aria-expanded` and `aria-controls`; Esc closes it; focus stays visible.
-4. **Layout:** navbar plus `<main>`, `lang="en"`, title template `%s | Jacob Martinez`, a meta description.
-5. **Data:** `src/lib/supabase.ts` with typed `getProjects()` (by `sort_order`), `getProject(slug)` and `getAbout()`, using plain `fetch` with `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` at build time. Missing variables fail the build with a clear message. Types in `src/lib/types.ts`, shaped by how the old `detail.js` and `about-me.js` read `code_snippets`, `terminal_session` and the gallery.
-6. **Slugs:** `src/lib/slug.ts` exports `slugify(title)` (lowercase, words joined by a hyphen, symbols dropped). A project's slug is its `slug` column when present, otherwise `slugify(title)`. Fail the build if two projects end up with the same slug.
+1. "Fun" in the navbar (desktop and mobile) linking to `/fun/`, a page of small side projects as cards. First card: the word finder.
+2. `/fun/word-finder/`: a client component, no network calls, nothing stored. Up to 7 letters like a Wordscapes wheel; lists every English word of 3+ letters makeable from them, each letter used at most as often as typed. Grouped by length, longest first, alphabetical within, with counts.
+3. Optional pattern box with underscores for unknown letters (`_a_e`) that filters to words that fit.
+4. Word list from a permissively licensed npm package (license noted in PLAN.md), plain lowercase words only, loaded only on this page.
+5. Labeled inputs, results announced to screen readers, keyboard only works, no layout shift while typing. Handbook `bestPractices.md` applies.
+6. Unit tests for the solver: letter counts, repeats, pattern filter, empty input.
 
-## Stage B: pages
+## Stage 2: automatic project posting and devlogs
 
-1. **Home** (`/`): intro with profile photo, resume button, "Featured Projects" grid with the live tag search and chips (client component), and the contact card. Cards link to `/projects/<slug>`.
-2. **Projects** (`/projects/`): the full feed from `projects-full.js`, in `sort_order`.
-3. **Project detail** (`/projects/[slug]/`): `generateStaticParams` builds one page per project. Write up, code excerpts, then the terminal replay or the demo link, exactly as `detail.js` decides. Per page `<title>` and description from the project.
-4. **About** (`/about/`): everything `about-me.js` renders from `about-me`, including the gallery with a carousel for cards that have several photos.
-5. **Contact** (`/contact/`): the Web3Forms form posting to the same endpoint, access key from `NEXT_PUBLIC_WEB3FORMS_KEY`, every input labeled.
-6. **Not found:** a simple `not-found.tsx` in the same style.
-7. **Highlighting at build time:** render code excerpts to highlighted HTML during the build (for example `shiki` or `prism` run in a server component) for C, C++, NASM, Java, Python, JavaScript, Bash, SQL, CSS and HTML. No highlighting scripts reach the browser.
-8. **Animations:** GSAP, ScrollTrigger and Lenis from npm, in small client components, matching `main.js` and `contact-outro.js`. Respect `prefers-reduced-motion`.
-9. **Old links:** add `detail.html` handling so an old `detail.html?id=N` link redirects to the right `/projects/<slug>/` (a tiny static page with a script mapping ids to slugs is fine).
+1. `portfolio.json` (documented in README.md): `show` (false by default), `slug`, `title`, `summary`, `tags`, `live`, `test` (optional), `section` (`main` or `fun`), plus optional fields matching `project-cards` columns. No file or `show: false` means it never appears. Private repos never get a repo link.
+2. At build time, list Jake's repos with a read only `GITHUB_TOKEN`, read each `portfolio.json`, merge with `project-cards`: a matching slug fills in or overrides fields, otherwise it becomes a new card. Duplicate slugs or a broken manifest fail the build with a clear message. `fun` cards go on `/fun/`. No `GITHUB_TOKEN`: skip manifests with a build warning.
+3. Devlogs: `devlog/*.md` in a shown repo renders at `/projects/<slug>/devlog/` (newest first) and `/projects/<slug>/devlog/<post>/`, linked from the project page when posts exist.
+4. Rebuild on push: a reusable workflow that, on push to `main`, calls the Vercel deploy hook from the `XENSITE_DEPLOY_HOOK` secret. Short how to in the handbook (committed to its main).
+5. XenSite gets its own `portfolio.json` and the workflow as the first example. Draft `portfolio.json` files for charityWater and loreal-Project in the hand back only.
 
-## Stage C: images and polish
+## Finish
 
-1. Convert every image the new site uses (both selfies, logos, contact image) to WebP or AVIF with `sharp` (dev dependency, one script in `scripts/`), into `public/`. No image over 300 KB; the hero photo under 150 KB.
-2. Every `<img>` has width and height, meaningful `alt`, and `loading="lazy"` except the largest one above the fold, which gets `fetchPriority="high"`.
-3. Copy the resume PDF into `public/` and point the button at it.
-4. Fix the baseline's failures: text contrast to WCAG AA, heading order with one `<h1>` per page, meta description on every page.
-5. Go through `~/projects/webdevhandbook/bestPractices.md` line by line and fix anything the new site breaks.
+- One pull request from `funAndPosting` into `main`.
+- Lighthouse Mobile (same CLI setup as the baseline, 3 runs, median) on a local production build of `/fun/word-finder/` and `/`.
+- Hand back: what was built, the pull request and Vercel preview links, the scores, the For Jake list, and anything uncertain.
 
-## Stage D: deploy setup and cleanup
+## For Jake
 
-1. Add `.github/workflows/deploy.yml`: on push to `main`, install, build with the three `NEXT_PUBLIC_` values from Actions secrets, and publish `out/` with the official Pages actions. Add `public/.nojekyll`.
-2. Delete the vanilla site from `nextjs`: `index.html`, `detail.html` (replaced by the redirect from Stage B), `project-files/`, and `Prev-Tasks/`. All of it stays in `vanillaPrototype`. Remove their ESLint ignores.
-3. Update `README.md` for the Next.js site: stack, how to run, how data flows, where deploy is configured.
-4. Update `AGENTS.md`'s folder notes now that the vanilla site is gone.
-
-## Stage E: check everything
-
-1. `npm run build`, then serve `out/` locally under `/XenSite` (for example `npx serve` from a folder that maps `/XenSite` to `out/`) and click through every page and every project at desktop and 375px width. Keyboard only works too.
-2. Run Lighthouse (same CLI and Mobile settings as the baseline) against the local build, 3 runs, median. Log it in the handbook's `nextjsMigration.md` XenSite section as a "Local build" row, clearly marked as not yet live. Commit the handbook straight to main.
-3. Update PLAN.md's Features table statuses.
-
-## Done when
-
-- Every stage is committed and pushed to `nextjs`, and `npm run lint` and `npm run build` pass on the last commit.
-- Every project has a prebuilt page, every page has a title, description and `<main>`, and no image is over 300 KB.
-- No key or Supabase URL appears in any committed file.
-- Local Lighthouse median is logged in the handbook.
-
-## Hand back to Jake
-
-- One short summary: what was built, and the local Lighthouse scores next to the baseline (Perf 70, A11y 91, BP 100, SEO 91, LCP 20.6s).
-- **Slug table and SQL:** each title with its slug, plus one SQL statement that adds a unique `slug` text column to `project-cards` and fills it with exactly those values. Jake runs it himself in the Supabase SQL Editor. URLs won't change when he does.
-- **Merge checklist** for Jake, in order: add the three Actions secrets, switch Pages source to GitHub Actions, merge `nextjs` into `main`, check the live site, then rerun Lighthouse on it for the After row.
-- Anything that didn't port cleanly or that you weren't sure about.
+- **GitHub token:** create a fine grained token (GitHub, Settings, Developer settings, Fine grained tokens): resource owner Xenzoro, All repositories, Contents read only. Put it in `.env.local` as `GITHUB_TOKEN=` and in Vercel (Project Settings, Environment Variables) as `GITHUB_TOKEN` for Production and Preview, then redeploy. Until then builds warn and skip manifests.
+- **Deploy hook:** in Vercel, Project Settings, Git, Deploy Hooks, create one for `main`. Add its URL as an Actions secret named `XENSITE_DEPLOY_HOOK` in every project repo that should rebuild the site, and copy `.github/workflows/notify-xensite.yml` into those repos. The reusable workflow is referenced at `@main`, so callers work once this branch is merged.
+- **XenSite card and devlog:** `portfolio.json` has `show: true`, so after the merge (with the token set) XenSite gets its own card on the home page, without a cover image, and the devlog post `devlog/2026-10-25-porting-to-nextjs.md` goes live. I wrote both; edit or set `show` to false if you'd rather not.
+- **charityWater and loreal-Project:** draft `portfolio.json` files are in the hand back. They reuse the existing Supabase slugs so they update the current cards instead of adding new ones.
+- **Word list size:** the word finder uses SCOWL up to size 60 (27,876 common words). Rare but valid words (the kind Wordscapes counts as bonus words) are missing. Going to size 70 roughly doubles the list and the download; say if you want it.
 
 ## Log
 
@@ -85,3 +59,8 @@
 | 2026-10-25 | Stage E: clean build, 46 scripted checks on the local build pass (every page and project at 1400px and 375px with no horizontal scroll, keyboard menu, tag search, feed search, terminal, gallery lightbox, form labels, skip link, `detail.html` redirect, 404). Hero photo box made fixed size after one Lighthouse run showed CLS 0.33. Local Lighthouse Mobile median of 3: Perf 91, A11y 100, BP 100, SEO 100, LCP 3.2s, TBT 10ms, CLS 0; logged in the handbook (committed to its main). PLAN.md feature statuses updated |
 | 2026-10-25 | `slug` column added to `project-cards` in Supabase (migration `add_project_cards_slug`, approved by Jake), filled with the 9 slugs the build already used, unique and required. URLs unchanged |
 | 2026-10-25 | Hosting switched to Vercel: base path removed (`src/lib/site.ts`), Pages workflow and `.nojekyll` deleted, docs updated |
+| 2026-10-25 | Phase 6 written into PLAN.md and NEXT.md; `funAndPosting` branched from `main` |
+| 2026-10-25 | Stage 1: "Fun" in the navbar, `/fun/` card page, `/fun/word-finder/` (letters and pattern inputs with labels and hints, letter tiles, polite status line, results grouped longest first with counts, Clear button), solver in `src/lib/wordFinder.ts` with 17 unit tests (`npm test`), SCOWL word list (27,876 words, 70 KB gzipped chunk loaded only by the word finder). Browser checks at 1400px and 375px: keyboard only, pattern, repeats, paste with spaces, no layout shift, no sideways scroll. SCOWL notice served at `/licenses/scowl.txt` and linked from the page; screen reader status waits for a pause in typing |
+| 2026-10-25 | Stage 2: `scripts/github.mjs` (repo list and manifests through the GitHub API, warning only without `GITHUB_TOKEN`), `portfolio.ts` validation and merge, `projects.ts` for pages, devlog routes with markdown rendered at build time, "Code on GitHub", "Test Build" and devlog links, `fun` section cards on `/fun/`, manifest cover images through the WebP pipeline, `rebuild-site.yml` and `notify-xensite.yml`, XenSite `portfolio.json` and first devlog post, README section, handbook `portfolioPosting.md`. 35 unit tests. Checked end to end with the real repo list plus XenSite's manifest, a devlog post and a private test repo injected locally (not committed): merge, private repo rule, highlighting, HTML stripping, 375px widths |
+| 2026-10-25 | Stage 2 review fixes: unsafe link and image URLs dropped from posts, post headings shifted down a level, title only from a first line heading, token only ever sent to api.github.com; 40 unit tests. Handbook `portfolioPosting.md` committed to its main |
+| 2026-10-25 | Finish: local production build, Lighthouse 13.4.1 Mobile, median of 3 (same CLI setup as the baseline). Home 91/100/100/100, LCP 3.2s, TBT 10ms, CLS 0. `/fun/word-finder/` 92/100/100/100, LCP 3.1s, TBT 20ms, CLS 0, 294 KiB including the word list. Pull request #4 opened from `funAndPosting` into `main` |

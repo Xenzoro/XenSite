@@ -6,7 +6,7 @@ import HomeMotion from "@/components/Home/HomeMotion";
 import ProjectGrid, { type ProjectCard } from "@/components/Home/ProjectGrid";
 import { media } from "@/lib/media";
 import { RESUME_PATH, withBasePath } from "@/lib/site";
-import { getProjects } from "@/lib/supabase";
+import { getProjects } from "@/lib/projects";
 import styles from "./page.module.css";
 
 export default async function Home() {
