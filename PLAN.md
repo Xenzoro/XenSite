@@ -59,7 +59,7 @@ Jake's personal portfolio site, hosted on Vercel (moved from GitHub Pages at the
 - Follow `~/projects/webdevhandbook/bestPractices.md` for web code.
 - Never write IPs, keys, passwords, tokens, login links or the desktop's full Tailscale name into code, commits or chats. Use placeholders.
 - Never commit `credentials.txt` (already in `.gitignore`).
-- Never read the xenDB `qwen/` folder.
+- Never read the XenDB `qwen/` folder.
 - Once per chat, before the first commit, ask Jake whether to use a separate branch or push straight to main (suggest a branch for big changes). Jake merges branches to main himself after testing.
 - `vanillaPrototype` and `failedPrototype` are snapshot branches. Never commit to them, merge them, or open pull requests for them.
 - Supabase stays read only from the site. Schema changes (like adding `slug`) are proposed to Jake first.

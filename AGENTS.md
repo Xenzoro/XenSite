@@ -40,7 +40,7 @@ This is Next.js 16, which may differ from what you know. Check the docs bundled 
 
 1. Never write secrets, IP addresses, passwords, tokens, login links or the desktop's full Tailscale name into this repo, commits or chats. Use placeholders like `<API_KEY>`. Config comes from `.env.local`, never from code.
 2. Never ask Jake to paste those anywhere.
-3. Never read the xenDB `qwen/` folder.
+3. Never read the XenDB `qwen/` folder.
 4. Never commit to, merge, or open pull requests for the snapshot branches `vanillaPrototype` and `failedPrototype`.
 5. The site only reads from Supabase. Propose schema changes to Jake; don't make them.
 6. Writing style in docs and UI copy: no em dashes, en dashes or hyphens in prose unless a phrase needs one.
