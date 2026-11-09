@@ -2,6 +2,13 @@
 
 <!-- The current handoff. Read PLAN.md first for what the project is, its scope and its rules. -->
 
+## Right now
+
+*Started 2026-11-08 4:35 PM by a Cowork chat, for one queued item only; the rest of this file is older.*
+
+**Queued**
+- Move the portfolio's tables into XenData's `portfolio` schema (PLAN.md decision, 2026-11-08). One round: in Supabase, create schema `portfolio`, move `project-cards` and `about-me` there as `project_cards` and `about_me` (their row level security policies move with them), grant `anon` usage and select only, and add `portfolio` to Data API, Exposed schemas; in `src/lib/supabase.ts`, send the header `Accept-Profile: portfolio` and use the new names. Ship the move and the code together, then rebuild on Vercel. Tests: the data requests carry `Accept-Profile: portfolio`, and a build fails loudly if a table can't be found. XenPulse did the same move (`Xenzoro/XenPulse`, commit aac9ed1).
+
 **Goal:** Finish the Next.js port end to end in one run, so the `nextjs` branch is ready for Jake to test and merge. Delivers every PLAN.md feature from Layout through After report.
 
 ## How to run this

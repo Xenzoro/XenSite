@@ -92,6 +92,7 @@ Jake's personal portfolio site, hosted on Vercel (moved from GitHub Pages at the
 | Navbar links prefetch on hover or focus, not when they enter the viewport | First visit downloads only the page itself (about 49 KB less); moved local mobile Perf from 86 to 91 | 2026-10-25 |
 | Archivo shipped as a Latin subset WOFF2 | Same glyphs the site uses, 19 KB instead of 89 KB | 2026-10-25 |
 | Vanilla site and `Prev-Tasks/` deleted from `nextjs`; their ESLint ignores removed | Port finished; everything stays in `vanillaPrototype` and a Prev-Tasks repo can still be cut from there | 2026-10-25 |
+| Supabase: the portfolio's project is renamed XenData and shared with other projects, one schema per project (Jake, 2026-11-08 4:21 PM). XenPulse already lives in `xenpulse`. The portfolio's tables move later, in one XenSite round, to schema `portfolio` as `project_cards` and `about_me` (no hyphens): the move and the code ship together. Not done yet: NEXT.md, Right now | Keeps each project's tables apart; doing the move and the code at once avoids a build that can't find its data | 2026-11-08 |
 
 ## Open questions (Jake decides)
 
